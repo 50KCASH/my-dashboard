@@ -356,26 +356,34 @@ body {
     </div>
   </div>
 
-  <!-- ===== BLUEPRINT TO-DO'S / CALENDAR ===== -->
-  <h2 class="section-header" style="margin-top:1.5rem;">Blueprint Calendar / To-do's</h2>
-  <p class="section-hint">Track your upcoming Blueprint assignments and deadlines</p>
+  <!-- ===== BLUEPRINT CALENDAR ===== -->
+  <h2 class="section-header" style="margin-top:1.5rem;">Blueprint Calendar</h2>
+  <p class="section-hint">Your Blueprint study schedule — live from your iCal feed</p>
   <div class="n-card">
     <div class="tab-bar">
-      <button class="tab active" onclick="switchBpTab(this,'list')">All to-do's</button>
+      <button class="tab active" onclick="switchBpTab(this,'upcoming')">Upcoming</button>
       <button class="tab" onclick="switchBpTab(this,'calendar')">Calendar</button>
+      <button class="tab" onclick="switchBpTab(this,'all')">All events</button>
     </div>
 
-    <div id="bp-tab-list">
-      <div class="todo-list" id="bp-todos"></div>
-      <div class="todo-add">
-        <input type="text" id="bp-todo-text" placeholder="Add a to-do..." onkeydown="if(event.key==='Enter')addBpTodo()" />
-        <input type="date" id="bp-todo-due" style="max-width:140px;" />
-        <button class="btn-new" onclick="addBpTodo()"><i class="ti ti-plus" aria-hidden="true" style="font-size:13px; vertical-align:-1px;"></i></button>
+    <div id="bp-tab-upcoming">
+      <div id="bp-upcoming-list" style="font-size:13px;">
+        <div class="empty-state"><i class="ti ti-loader" aria-hidden="true"></i>Loading Blueprint calendar...</div>
       </div>
     </div>
 
     <div id="bp-tab-calendar" class="hidden">
+      <div id="bp-cal-nav" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+        <button class="btn-sm-outline" onclick="bpCalNav(-1)"><i class="ti ti-chevron-left" aria-hidden="true" style="font-size:14px;"></i></button>
+        <span id="bp-cal-month" style="font-size:14px; font-weight:600; color:#ffffffb0;"></span>
+        <button class="btn-sm-outline" onclick="bpCalNav(1)"><i class="ti ti-chevron-right" aria-hidden="true" style="font-size:14px;"></i></button>
+      </div>
       <div id="bp-cal-grid" style="font-size:13px;"></div>
+      <div id="bp-cal-day-events" style="margin-top:12px; font-size:13px;"></div>
+    </div>
+
+    <div id="bp-tab-all" class="hidden">
+      <div id="bp-all-list" style="font-size:13px; max-height:400px; overflow-y:auto;"></div>
     </div>
   </div>
 
@@ -535,111 +543,207 @@ window.delBp = function(si) {
   if (ri > -1) { s.splice(ri, 1); setStore(BP_KEY, s); renderBp(); }
 };
 
-// ==================== BLUEPRINT TO-DO'S ====================
-function renderBpTodos() {
-  const todos = getStore(BP_TODO_KEY);
-  const el = document.getElementById('bp-todos');
-  if (!todos.length) {
-    el.innerHTML = '<div class="empty-state" style="padding:1rem;"><i class="ti ti-checkbox" aria-hidden="true"></i>No to-do\'s yet</div>';
-  } else {
-    const sorted = [...todos].sort((a, b) => {
-      if (a.done !== b.done) return a.done ? 1 : -1;
-      return (a.due || '9999').localeCompare(b.due || '9999');
-    });
-    el.innerHTML = sorted.map((t, i) => `
-      <div class="todo-item">
-        <button class="todo-check ${t.done ? 'checked' : ''}" onclick="toggleTodo(${i})">
-          ${t.done ? '<i class="ti ti-check" aria-hidden="true"></i>' : ''}
-        </button>
-        <span class="todo-text ${t.done ? 'checked' : ''}">${escHtml(t.text)}</span>
-        ${t.due ? `<span class="todo-due">${t.due}</span>` : ''}
-        <button class="delete-btn" onclick="delTodo(${i})"><i class="ti ti-x" aria-hidden="true"></i></button>
-      </div>
-    `).join('');
+// ==================== BLUEPRINT CALENDAR (iCal) ====================
+const BP_ICAL_URL = 'https://api-composite-lsat.blueprintprep.com/cal/fd9ae28f-35a7-4246-90e4-c446f03cecab?k=RevKCD8UMrqHPLdNghgjrT6usbEgpICgXZp55YEW3OM%3D';
+let bpEvents = [];
+let bpCalMonth = now.getMonth();
+let bpCalYear = now.getFullYear();
+let bpSelectedDate = null;
+
+function parseIcal(text) {
+  const events = [];
+  const blocks = text.split('BEGIN:VEVENT');
+  for (let i = 1; i < blocks.length; i++) {
+    const block = blocks[i].split('END:VEVENT')[0];
+    const get = (key) => {
+      const re = new RegExp(key + '(?:;[^:]*)?:(.+)', 'm');
+      const m = block.match(re);
+      return m ? m[1].trim().replace(/\\n/g, '\n').replace(/\\,/g, ',') : '';
+    };
+    const dtRaw = get('DTSTART');
+    let date = '', time = '', dateObj = null;
+    if (dtRaw.length === 8) {
+      date = dtRaw.slice(0,4) + '-' + dtRaw.slice(4,6) + '-' + dtRaw.slice(6,8);
+      dateObj = new Date(date + 'T00:00:00');
+    } else if (dtRaw.length >= 15) {
+      date = dtRaw.slice(0,4) + '-' + dtRaw.slice(4,6) + '-' + dtRaw.slice(6,8);
+      const h = parseInt(dtRaw.slice(9,11));
+      const m = dtRaw.slice(11,13);
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+      time = h12 + ':' + m + ' ' + ampm;
+      dateObj = new Date(date + 'T' + dtRaw.slice(9,11) + ':' + m + ':00');
+    }
+    const summary = get('SUMMARY');
+    const desc = get('DESCRIPTION');
+    let url = '';
+    const urlMatch = desc.match(/https?:\/\/[^\s\\]+/);
+    if (urlMatch) url = urlMatch[0];
+    let type = 'task';
+    const sl = summary.toLowerCase();
+    if (sl.includes('practice exam') || sl.includes('pt ')) type = 'exam';
+    else if (sl.includes('practice') && (sl.includes('rc') || sl.includes('lr'))) type = 'practice';
+    else if (sl.includes('lesson') || sl.includes('seminar')) type = 'live';
+    else if (sl.includes('lsat exam')) type = 'lsat';
+    else if (sl.includes('review')) type = 'review';
+    if (summary) events.push({ summary, date, time, dateObj, url, type, desc });
   }
-  renderBpCalendar();
+  events.sort((a, b) => (a.date + (a.time||'00:00')).localeCompare(b.date + (b.time||'00:00')));
+  return events;
 }
 
-function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function eventTagClass(type) {
+  const m = { exam: 'n-tag-red', practice: 'n-tag-orange', live: 'n-tag-purple', lsat: 'n-tag-red', review: 'n-tag-green', task: 'n-tag-blue' };
+  return m[type] || 'n-tag-blue';
+}
+function eventTypeLabel(type) {
+  const m = { exam: 'Exam', practice: 'Practice', live: 'Live', lsat: 'LSAT', review: 'Review', task: 'Lesson' };
+  return m[type] || 'Task';
+}
 
-window.addBpTodo = function() {
-  const text = document.getElementById('bp-todo-text').value.trim();
-  if (!text) return;
-  const due = document.getElementById('bp-todo-due').value || null;
-  const todos = getStore(BP_TODO_KEY);
-  todos.push({ text, due, done: false });
-  setStore(BP_TODO_KEY, todos);
-  document.getElementById('bp-todo-text').value = '';
-  renderBpTodos();
-};
+function renderBpUpcoming() {
+  const el = document.getElementById('bp-upcoming-list');
+  const upcoming = bpEvents.filter(e => e.date >= todayStr).slice(0, 15);
+  if (!upcoming.length) {
+    el.innerHTML = '<div class="empty-state"><i class="ti ti-calendar-off" aria-hidden="true"></i>No upcoming events</div>';
+    return;
+  }
+  let lastDate = '';
+  el.innerHTML = upcoming.map(e => {
+    let dateHeader = '';
+    if (e.date !== lastDate) {
+      lastDate = e.date;
+      const d = new Date(e.date + 'T12:00:00');
+      const label = e.date === todayStr ? 'Today' : d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      dateHeader = `<div style="font-size:12px; font-weight:600; color:#ffffff5c; margin-top:12px; margin-bottom:4px; padding-top:8px; border-top:1px solid #ffffff0a;">${label}</div>`;
+    }
+    const link = e.url ? ` <a href="${e.url}" target="_blank" rel="noopener" style="color:#6eb0f7; font-size:11px; text-decoration:none;"><i class="ti ti-external-link" aria-hidden="true" style="font-size:12px;"></i></a>` : '';
+    return `${dateHeader}
+      <div style="display:flex; align-items:center; gap:8px; padding:6px 0;">
+        <span style="min-width:65px; font-size:12px; color:#ffffff48;">${e.time || 'All day'}</span>
+        <span class="n-tag ${eventTagClass(e.type)}">${eventTypeLabel(e.type)}</span>
+        <span style="flex:1; color:#ffffffc0;">${e.summary}</span>${link}
+      </div>`;
+  }).join('');
+}
 
-window.toggleTodo = function(si) {
-  const todos = getStore(BP_TODO_KEY);
-  const sorted = [...todos].sort((a, b) => {
-    if (a.done !== b.done) return a.done ? 1 : -1;
-    return (a.due || '9999').localeCompare(b.due || '9999');
-  });
-  const target = sorted[si];
-  const ri = todos.findIndex(t => t.text === target.text && t.due === target.due);
-  if (ri > -1) { todos[ri].done = !todos[ri].done; setStore(BP_TODO_KEY, todos); renderBpTodos(); }
-};
+function renderBpAll() {
+  const el = document.getElementById('bp-all-list');
+  if (!bpEvents.length) {
+    el.innerHTML = '<div class="empty-state"><i class="ti ti-calendar-off" aria-hidden="true"></i>No events</div>';
+    return;
+  }
+  let lastDate = '';
+  el.innerHTML = bpEvents.map(e => {
+    let dateHeader = '';
+    if (e.date !== lastDate) {
+      lastDate = e.date;
+      const d = new Date(e.date + 'T12:00:00');
+      const isPast = e.date < todayStr;
+      const label = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+      dateHeader = `<div style="font-size:12px; font-weight:600; color:${isPast ? '#ffffff30' : '#ffffff5c'}; margin-top:12px; margin-bottom:4px; padding-top:8px; border-top:1px solid #ffffff0a;">${label}</div>`;
+    }
+    const isPast = e.date < todayStr;
+    const opacity = isPast ? '0.4' : '1';
+    const link = e.url ? ` <a href="${e.url}" target="_blank" rel="noopener" style="color:#6eb0f7; font-size:11px; text-decoration:none;"><i class="ti ti-external-link" aria-hidden="true" style="font-size:12px;"></i></a>` : '';
+    return `${dateHeader}
+      <div style="display:flex; align-items:center; gap:8px; padding:5px 0; opacity:${opacity};">
+        <span style="min-width:65px; font-size:12px; color:#ffffff48;">${e.time || 'All day'}</span>
+        <span class="n-tag ${eventTagClass(e.type)}">${eventTypeLabel(e.type)}</span>
+        <span style="flex:1; color:#ffffffc0;">${e.summary}</span>${link}
+      </div>`;
+  }).join('');
+}
 
-window.delTodo = function(si) {
-  const todos = getStore(BP_TODO_KEY);
-  const sorted = [...todos].sort((a, b) => {
-    if (a.done !== b.done) return a.done ? 1 : -1;
-    return (a.due || '9999').localeCompare(b.due || '9999');
-  });
-  const target = sorted[si];
-  const ri = todos.findIndex(t => t.text === target.text && t.due === target.due);
-  if (ri > -1) { todos.splice(ri, 1); setStore(BP_TODO_KEY, todos); renderBpTodos(); }
-};
-
-// Blueprint calendar view
 function renderBpCalendar() {
-  const todos = getStore(BP_TODO_KEY);
   const grid = document.getElementById('bp-cal-grid');
-  const d = new Date();
-  const year = d.getFullYear(); const month = d.getMonth();
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const monthName = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const firstDay = new Date(bpCalYear, bpCalMonth, 1).getDay();
+  const daysInMonth = new Date(bpCalYear, bpCalMonth + 1, 0).getDate();
+  document.getElementById('bp-cal-month').textContent = new Date(bpCalYear, bpCalMonth).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
-  const todoDates = {};
-  todos.forEach(t => { if (t.due) { todoDates[t.due] = todoDates[t.due] || []; todoDates[t.due].push(t); } });
+  const eventsByDate = {};
+  bpEvents.forEach(e => { eventsByDate[e.date] = eventsByDate[e.date] || []; eventsByDate[e.date].push(e); });
 
-  let html = `<div style="text-align:center; font-weight:600; color:#ffffffb0; margin-bottom:12px;">${monthName}</div>`;
-  html += '<div style="display:grid; grid-template-columns:repeat(7,1fr); gap:2px; text-align:center;">';
+  let html = '<div style="display:grid; grid-template-columns:repeat(7,1fr); gap:2px; text-align:center;">';
   ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(day => {
     html += `<div style="font-size:11px; color:#ffffff38; padding:4px 0;">${day}</div>`;
   });
   for (let i = 0; i < firstDay; i++) html += '<div></div>';
   for (let day = 1; day <= daysInMonth; day++) {
-    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const dateStr = `${bpCalYear}-${String(bpCalMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
     const isToday = dateStr === todayStr;
-    const hasTodo = todoDates[dateStr];
-    const bg = isToday ? '#2e6fdb' : hasTodo ? '#ffffff14' : 'transparent';
-    const border = hasTodo && !isToday ? '1px solid #6eb0f740' : 'none';
-    html += `<div style="padding:6px 2px; border-radius:4px; background:${bg}; border:${border}; position:relative; color:${isToday ? '#fff' : '#ffffffa0'};">
+    const evts = eventsByDate[dateStr];
+    const count = evts ? evts.length : 0;
+    const isSelected = dateStr === bpSelectedDate;
+    const bg = isSelected ? '#2e6fdb' : isToday ? '#2e6fdb55' : count ? '#ffffff14' : 'transparent';
+    const border = count && !isSelected && !isToday ? '1px solid #6eb0f740' : isToday && !isSelected ? '1px solid #2e6fdb' : 'none';
+    const cursor = count ? 'cursor:pointer;' : '';
+    html += `<div onclick="bpCalSelect('${dateStr}')" style="padding:6px 2px; border-radius:4px; background:${bg}; border:${border}; ${cursor} color:${isSelected ? '#fff' : isToday ? '#6eb0f7' : '#ffffffa0'};">
       ${day}
-      ${hasTodo ? '<div style="width:4px;height:4px;border-radius:50%;background:#6eb0f7;margin:2px auto 0;"></div>' : ''}
+      ${count ? `<div style="display:flex; gap:1px; justify-content:center; margin-top:2px;">${Array(Math.min(count, 3)).fill('<div style="width:4px;height:4px;border-radius:50%;background:#6eb0f7;"></div>').join('')}${count > 3 ? '<div style="font-size:8px;color:#6eb0f7;">+</div>' : ''}</div>` : ''}
     </div>`;
   }
   html += '</div>';
   grid.innerHTML = html;
+
+  const dayEventsEl = document.getElementById('bp-cal-day-events');
+  if (bpSelectedDate && eventsByDate[bpSelectedDate]) {
+    const evts = eventsByDate[bpSelectedDate];
+    const d = new Date(bpSelectedDate + 'T12:00:00');
+    const label = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+    dayEventsEl.innerHTML = `<div style="font-size:12px; font-weight:600; color:#ffffff5c; margin-bottom:6px;">${label}</div>` +
+      evts.map(e => {
+        const link = e.url ? ` <a href="${e.url}" target="_blank" rel="noopener" style="color:#6eb0f7; font-size:11px; text-decoration:none;"><i class="ti ti-external-link" aria-hidden="true" style="font-size:12px;"></i></a>` : '';
+        return `<div style="display:flex; align-items:center; gap:8px; padding:5px 0; border-bottom:1px solid #ffffff0a;">
+          <span style="min-width:60px; font-size:12px; color:#ffffff48;">${e.time || 'All day'}</span>
+          <span class="n-tag ${eventTagClass(e.type)}">${eventTypeLabel(e.type)}</span>
+          <span style="flex:1; color:#ffffffc0;">${e.summary}</span>${link}
+        </div>`;
+      }).join('');
+  } else {
+    dayEventsEl.innerHTML = '';
+  }
 }
+
+window.bpCalSelect = function(dateStr) {
+  bpSelectedDate = bpSelectedDate === dateStr ? null : dateStr;
+  renderBpCalendar();
+};
+
+window.bpCalNav = function(dir) {
+  bpCalMonth += dir;
+  if (bpCalMonth > 11) { bpCalMonth = 0; bpCalYear++; }
+  if (bpCalMonth < 0) { bpCalMonth = 11; bpCalYear--; }
+  bpSelectedDate = null;
+  renderBpCalendar();
+};
 
 window.switchBpTab = function(btn, tab) {
   btn.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
-  document.getElementById('bp-tab-list').classList.toggle('hidden', tab !== 'list');
-  document.getElementById('bp-tab-calendar').classList.toggle('hidden', tab !== 'calendar');
+  ['upcoming','calendar','all'].forEach(t => document.getElementById('bp-tab-'+t).classList.toggle('hidden', t !== tab));
 };
+
+function loadBpCalendar() {
+  const proxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(BP_ICAL_URL);
+  fetch(proxy)
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+    .then(text => {
+      bpEvents = parseIcal(text);
+      renderBpUpcoming();
+      renderBpAll();
+      renderBpCalendar();
+    })
+    .catch(err => {
+      document.getElementById('bp-upcoming-list').innerHTML =
+        '<div class="empty-state"><i class="ti ti-alert-circle" aria-hidden="true"></i>Could not load calendar. CORS proxy may be down.<br><a href="' + BP_ICAL_URL + '" target="_blank" rel="noopener" style="color:#6eb0f7; font-size:12px;">Open raw feed</a></div>';
+    });
+}
 
 // Init
 renderDemon();
 renderBp();
-renderBpTodos();
+loadBpCalendar();
 </script>
 </body>
 </html>
