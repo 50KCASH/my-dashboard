@@ -19,9 +19,8 @@ body {
 /* Cover banner */
 .cover {
   width: 100%;
-  height: 220px;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 30%, #0f3460 60%, #1a1a2e 100%);
-  background-size: cover;
+  height: 280px;
+  background: url('https://images.unsplash.com/photo-1690406493974-2ca4fe096c1c?fm=jpg&q=80&w=2000&auto=format&fit=crop') center center / cover no-repeat;
   position: relative;
   overflow: hidden;
 }
@@ -526,24 +525,6 @@ const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good 
 document.getElementById('greeting').textContent = greet + ', Alejandro';
 document.getElementById('dateDisplay').textContent = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 document.getElementById('lsat-date').valueAsDate = now;
-
-// Cover image - dark desk aesthetic
-const canvas = document.createElement('canvas');
-canvas.width = 1400; canvas.height = 440;
-const ctx = canvas.getContext('2d');
-const grd = ctx.createLinearGradient(0, 0, 1400, 440);
-grd.addColorStop(0, '#0d1117');
-grd.addColorStop(0.3, '#161b22');
-grd.addColorStop(0.5, '#1a2332');
-grd.addColorStop(0.7, '#0f1923');
-grd.addColorStop(1, '#0d1117');
-ctx.fillStyle = grd;
-ctx.fillRect(0, 0, 1400, 440);
-for (let i = 0; i < 60; i++) {
-  ctx.fillStyle = `rgba(${100 + Math.floor(i*2.5)}, ${120 + Math.floor(i*2)}, ${160 + Math.floor(i*1.5)}, ${0.03 + (i%5)*0.008})`;
-  ctx.fillRect(Math.floor(i * 23.3), Math.floor((i * 7) % 440), Math.floor(200 + (i%4)*80), Math.floor(2 + (i%3)));
-}
-document.getElementById('cover').style.backgroundImage = `url(${canvas.toDataURL()})`;
 
 // Calendar tabs
 window.switchCalTab = function(btn, tab) {
