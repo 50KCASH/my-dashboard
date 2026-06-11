@@ -16,69 +16,25 @@ body {
   min-height: 100vh;
 }
 
-/* Cover banner */
-.cover {
-  width: 100%;
-  height: 280px;
-  background: url('https://images.unsplash.com/photo-1690406493974-2ca4fe096c1c?fm=jpg&q=80&w=2000&auto=format&fit=crop') center center / cover no-repeat;
-  position: relative;
-  overflow: hidden;
-}
-.cover::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 60px;
-  background: linear-gradient(transparent, #191919);
-}
-
-/* Page icon */
-.page-icon {
-  width: 72px;
-  height: 72px;
-  font-size: 48px;
-  margin-top: -40px;
-  position: relative;
-  z-index: 2;
-  line-height: 72px;
-}
-
 .container {
   max-width: 900px;
   margin: 0 auto;
-  padding: 0 96px 3rem;
+  padding: 3rem 96px;
 }
 
-/* Title */
+.page-icon { font-size: 48px; line-height: 1; margin-bottom: 8px; }
 .page-title {
   font-size: 40px;
   font-weight: 700;
   color: #ffffffe6;
-  margin: 8px 0 4px;
+  margin-bottom: 4px;
   letter-spacing: -0.5px;
 }
-.page-subtitle {
-  font-size: 14px;
-  color: #ffffff5c;
-  margin-bottom: 2rem;
-}
+.page-subtitle { font-size: 14px; color: #ffffff5c; margin-bottom: 2.5rem; }
 
-/* Section headers - Notion style */
-.section-header {
-  font-size: 20px;
-  font-weight: 600;
-  color: #ffffffe6;
-  margin: 2.5rem 0 4px;
-}
-.section-hint {
-  font-size: 13px;
-  color: #ffffff48;
-  margin-bottom: 12px;
-}
+.section-header { font-size: 20px; font-weight: 600; color: #ffffffe6; margin: 2.5rem 0 4px; }
+.section-hint { font-size: 13px; color: #ffffff48; margin-bottom: 12px; }
 
-/* Notion-style dark cards */
 .n-card {
   background: #ffffff08;
   border: 1px solid #ffffff0f;
@@ -86,91 +42,163 @@ body {
   padding: 14px 16px;
   transition: background 0.15s;
 }
-.n-card:hover {
-  background: #ffffff12;
-}
+.n-card:hover { background: #ffffff12; }
+.n-card + .n-card { margin-top: 8px; }
 
-/* Gallery cards (like the Courses section) */
-.gallery-grid {
+/* Gallery cards for LSAT programs */
+.program-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: 16px;
-  margin-bottom: 8px;
 }
-.gallery-card {
+.program-card {
   background: #ffffff08;
   border: 1px solid #ffffff0f;
   border-radius: 4px;
   overflow: hidden;
-  transition: background 0.15s;
-  cursor: default;
 }
-.gallery-card:hover { background: #ffffff12; }
-.gallery-cover {
-  height: 120px;
-  background-size: cover;
-  background-position: center;
-  position: relative;
-}
-.gallery-body { padding: 12px 14px; }
-.gallery-title { font-size: 14px; font-weight: 600; color: #ffffffe6; margin-bottom: 4px; }
-.gallery-sub { font-size: 12px; color: #ffffff5c; }
-
-/* Kanban board (like the To-do's section) */
-.kanban {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-top: 8px;
-}
-.kanban-col {
-  min-height: 100px;
-}
-.kanban-col-header {
-  font-size: 13px;
-  font-weight: 500;
-  padding: 6px 0;
-  margin-bottom: 8px;
+.program-card:hover { background: #ffffff0c; }
+.program-header {
+  padding: 16px;
+  border-bottom: 1px solid #ffffff0a;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
-.kanban-col-header .count {
-  font-size: 12px;
-  color: #ffffff48;
-  font-weight: 400;
+.program-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  flex-shrink: 0;
 }
-.kanban-item {
+.program-icon-demon { background: #5c2828; color: #e87070; }
+.program-icon-bp { background: #2e4a6e; color: #6eb0f7; }
+.program-name { font-size: 16px; font-weight: 600; color: #ffffffe6; }
+.program-sub { font-size: 12px; color: #ffffff48; }
+.program-body { padding: 16px; }
+
+/* Metric cards */
+.metric-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.metric {
   background: #ffffff08;
   border: 1px solid #ffffff0f;
   border-radius: 4px;
-  padding: 10px 12px;
-  margin-bottom: 6px;
-  font-size: 13px;
-  transition: background 0.15s;
+  padding: 12px 14px;
 }
-.kanban-item:hover { background: #ffffff14; }
-.kanban-item-title { font-weight: 500; color: #ffffffe6; margin-bottom: 2px; }
-.kanban-item-meta { font-size: 11px; color: #ffffff48; }
+.metric-label { font-size: 11px; color: #ffffff48; margin-bottom: 2px; }
+.metric-value { font-size: 22px; font-weight: 600; color: #ffffffe6; }
+.metric-value.small { font-size: 15px; }
 
-/* Tags - Notion colored */
-.n-tag {
-  display: inline-block;
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 3px;
-  font-weight: 500;
-  margin-right: 4px;
-}
+.progress-bg { height: 4px; background: #ffffff14; border-radius: 2px; overflow: hidden; margin-top: 6px; }
+.progress-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
+
+/* Tags */
+.n-tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 3px; font-weight: 500; margin-right: 4px; }
+.n-tag-red { background: #5c2828; color: #e87070; }
 .n-tag-blue { background: #2e4a6e; color: #6eb0f7; }
 .n-tag-green { background: #28443b; color: #4dba87; }
 .n-tag-orange { background: #5c3b1e; color: #e8a44a; }
 .n-tag-purple { background: #3d2e5c; color: #b08ee6; }
-.n-tag-red { background: #5c2828; color: #e87070; }
 .n-tag-teal { background: #1e4a4a; color: #4dc9c9; }
-.n-tag-pink { background: #4a2040; color: #d976b0; }
-.n-tag-yellow { background: #4a4020; color: #d9c76b; }
-.n-tag-gray { background: #3a3a3a; color: #9a9a9a; }
+
+/* Tabs */
+.tab-bar { display: flex; gap: 0; border-bottom: 1px solid #ffffff14; margin-bottom: 14px; }
+.tab {
+  padding: 6px 14px; font-size: 13px; color: #ffffff5c; background: none;
+  border: none; border-bottom: 2px solid transparent; cursor: pointer; font-family: inherit;
+}
+.tab.active { color: #ffffffe6; border-bottom-color: #ffffffe6; font-weight: 500; }
+.tab:hover:not(.active) { color: #ffffff9c; }
+
+/* Forms */
+.n-form { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; margin: 10px 0; }
+.n-form label { font-size: 12px; color: #ffffff48; display: block; margin-bottom: 4px; }
+.n-form input, .n-form select {
+  width: 100%; padding: 6px 10px; background: #ffffff0a; border: 1px solid #ffffff14;
+  border-radius: 4px; color: #ffffffe6; font-size: 14px; font-family: inherit;
+}
+.n-form input:focus, .n-form select:focus { outline: none; border-color: #4d9be6; box-shadow: 0 0 0 1px #4d9be640; }
+.n-form select option { background: #2d2d2d; color: #ffffffe6; }
+.n-field { flex: 1; min-width: 90px; }
+
+/* Buttons */
+.btn-new {
+  background: #2e6fdb; color: #fff; border: none; border-radius: 4px;
+  padding: 6px 14px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: inherit;
+}
+.btn-new:hover { background: #2558b0; }
+.btn-sm-outline {
+  background: none; color: #ffffff5c; border: 1px solid #ffffff1a; border-radius: 4px;
+  padding: 4px 10px; font-size: 11px; cursor: pointer; font-family: inherit;
+}
+.btn-sm-outline:hover { color: #ffffffe6; border-color: #ffffff30; }
+
+/* Study log */
+.study-log { max-height: 240px; overflow-y: auto; }
+.study-log-row {
+  display: flex; align-items: center; gap: 8px; padding: 7px 0;
+  border-bottom: 1px solid #ffffff0a; font-size: 13px;
+}
+.study-log-row:last-child { border-bottom: none; }
+.log-date { color: #ffffff48; min-width: 80px; font-size: 12px; }
+.log-hours { color: #ffffff5c; min-width: 45px; text-align: right; font-size: 12px; }
+.log-score { font-weight: 600; min-width: 40px; text-align: right; font-size: 13px; }
+.delete-btn { background: none; border: none; color: #ffffff20; cursor: pointer; font-size: 13px; padding: 2px; }
+.delete-btn:hover { color: #e87070; }
+
+/* Calendar To-do's */
+.todo-list { margin-top: 8px; }
+.todo-item {
+  display: flex; align-items: center; gap: 10px; padding: 8px 0;
+  border-bottom: 1px solid #ffffff0a; font-size: 13px;
+}
+.todo-item:last-child { border-bottom: none; }
+.todo-check {
+  width: 16px; height: 16px; border: 1.5px solid #ffffff30; border-radius: 3px;
+  background: none; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  color: transparent; font-size: 11px; transition: all 0.15s;
+}
+.todo-check.checked { background: #2e6fdb; border-color: #2e6fdb; color: #fff; }
+.todo-text { flex: 1; color: #ffffffc0; }
+.todo-text.checked { text-decoration: line-through; color: #ffffff38; }
+.todo-due { font-size: 11px; color: #ffffff38; }
+.todo-add {
+  display: flex; gap: 8px; margin-top: 10px; padding-top: 10px;
+  border-top: 1px solid #ffffff0a;
+}
+.todo-add input {
+  flex: 1; padding: 6px 10px; background: #ffffff0a; border: 1px solid #ffffff14;
+  border-radius: 4px; color: #ffffffe6; font-size: 13px; font-family: inherit;
+}
+.todo-add input:focus { outline: none; border-color: #4d9be6; }
+
+/* Two-column layout */
+.two-col {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 2.5rem;
+}
+.two-col .section-header { margin-top: 0; }
+
+/* Empty states */
+.empty-state { text-align: center; padding: 2rem 1rem; color: #ffffff38; font-size: 13px; }
+.empty-state i { font-size: 28px; display: block; margin-bottom: 6px; color: #ffffff20; }
+
+/* Connect button */
+.connect-btn {
+  display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 4px;
+  border: 1px solid #ffffff1a; background: #ffffff08; color: #ffffff9c;
+  font-size: 13px; cursor: pointer; font-family: inherit; margin-top: 10px;
+}
+.connect-btn:hover { background: #ffffff14; color: #ffffffe6; }
 
 /* Status dots */
 .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
@@ -178,181 +206,19 @@ body {
 .status-progress { background: #2e9b6e; }
 .status-done { background: #6eb0f7; }
 
-/* Metric cards */
-.metric-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 12px;
-  margin: 12px 0;
-}
-.metric {
-  background: #ffffff08;
-  border: 1px solid #ffffff0f;
-  border-radius: 4px;
-  padding: 14px 16px;
-}
-.metric-label { font-size: 12px; color: #ffffff48; margin-bottom: 4px; }
-.metric-value { font-size: 24px; font-weight: 600; color: #ffffffe6; }
-.metric-value.small { font-size: 16px; }
-
-/* Progress bar */
-.progress-bg { height: 4px; background: #ffffff14; border-radius: 2px; overflow: hidden; margin-top: 8px; }
-.progress-fill { height: 100%; border-radius: 2px; background: #2e9b6e; transition: width 0.3s; }
-
-/* Tabs */
-.tab-bar {
-  display: flex;
-  gap: 0;
-  border-bottom: 1px solid #ffffff14;
-  margin-bottom: 14px;
-}
-.tab {
-  padding: 6px 14px;
-  font-size: 13px;
-  color: #ffffff5c;
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  cursor: pointer;
-  font-family: inherit;
-  transition: color 0.15s;
-}
-.tab.active { color: #ffffffe6; border-bottom-color: #ffffffe6; font-weight: 500; }
-.tab:hover:not(.active) { color: #ffffff9c; }
-
-/* Form inputs */
-.n-form { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; margin: 12px 0; }
-.n-form label { font-size: 12px; color: #ffffff48; display: block; margin-bottom: 4px; }
-.n-form input, .n-form select {
-  width: 100%;
-  padding: 6px 10px;
-  background: #ffffff0a;
-  border: 1px solid #ffffff14;
-  border-radius: 4px;
-  color: #ffffffe6;
-  font-size: 14px;
-  font-family: inherit;
-}
-.n-form input:focus, .n-form select:focus {
-  outline: none;
-  border-color: #4d9be6;
-  box-shadow: 0 0 0 1px #4d9be640;
-}
-.n-form select option { background: #2d2d2d; color: #ffffffe6; }
-.n-field { flex: 1; min-width: 100px; }
-
-/* Buttons */
-.btn-new {
-  background: #2e6fdb;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 4px 12px;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  font-family: inherit;
-}
-.btn-new:hover { background: #2558b0; }
-
-/* Study log */
-.study-log { max-height: 280px; overflow-y: auto; }
-.study-log-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 0;
-  border-bottom: 1px solid #ffffff0a;
-  font-size: 13px;
-}
-.study-log-row:last-child { border-bottom: none; }
-.log-date { color: #ffffff48; min-width: 80px; font-size: 12px; }
-.log-hours { color: #ffffff5c; min-width: 45px; text-align: right; font-size: 12px; }
-.log-score { font-weight: 600; min-width: 40px; text-align: right; font-size: 13px; }
-.delete-btn {
-  background: none;
-  border: none;
-  color: #ffffff20;
-  cursor: pointer;
-  font-size: 13px;
-  padding: 2px;
-  transition: color 0.15s;
-}
-.delete-btn:hover { color: #e87070; }
-
-/* Two-column layout */
-.two-col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 48px;
-  margin-top: 2.5rem;
-}
-.two-col .section-header { margin-top: 0; }
-
-/* Empty states */
-.empty-state {
-  text-align: center;
-  padding: 2rem 1rem;
-  color: #ffffff38;
-  font-size: 13px;
-}
-.empty-state i { font-size: 28px; display: block; margin-bottom: 6px; color: #ffffff20; }
-
-/* Connect button */
-.connect-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border-radius: 4px;
-  border: 1px solid #ffffff1a;
-  background: #ffffff08;
-  color: #ffffff9c;
-  font-size: 13px;
-  cursor: pointer;
-  font-family: inherit;
-  margin-top: 10px;
-  transition: all 0.15s;
-}
-.connect-btn:hover { background: #ffffff14; color: #ffffffe6; }
-
-/* Calendar event rows */
-.event-row { display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid #ffffff0a; }
-.event-row:last-child { border-bottom: none; }
-.event-time { font-size: 12px; color: #ffffff48; min-width: 65px; padding-top: 1px; }
-.event-title { font-size: 14px; font-weight: 500; color: #ffffffe6; }
-
-/* Notion divider */
-.n-divider { border: none; border-top: 1px solid #ffffff14; margin: 2rem 0; }
-
 .hidden { display: none; }
 
-/* List items for bottom sections */
-.list-group-title { font-size: 13px; font-weight: 600; color: #ffffff9c; margin: 16px 0 6px; }
-.list-group-title:first-child { margin-top: 8px; }
-.list-item { font-size: 14px; color: #ffffff7a; padding: 4px 0; display: flex; align-items: center; gap: 6px; }
-.list-item i { font-size: 16px; }
-.schedule-time { font-size: 13px; font-weight: 600; color: #ffffff9c; margin-top: 14px; margin-bottom: 4px; }
-.schedule-time:first-child { margin-top: 8px; }
-.schedule-item { font-size: 14px; color: #ffffff7a; padding: 2px 0; display: flex; align-items: center; gap: 6px; }
-
 @media (max-width: 768px) {
-  .container { padding: 0 24px 3rem; }
-  .kanban { grid-template-columns: 1fr; }
+  .container { padding: 2rem 24px; }
+  .program-grid { grid-template-columns: 1fr; }
   .two-col { grid-template-columns: 1fr; gap: 0; }
-  .gallery-grid { grid-template-columns: 1fr; }
   .page-title { font-size: 30px; }
-  .cover { height: 160px; }
 }
 </style>
 </head>
 <body>
 
-<!-- Cover Banner -->
-<div class="cover" id="cover"></div>
-
 <div class="container">
-  <!-- Page Icon + Title -->
   <div class="page-icon">&#x1F4DA;</div>
   <h1 class="page-title" id="greeting">Alejandro's Dashboard</h1>
   <p class="page-subtitle" id="dateDisplay"></p>
@@ -386,106 +252,132 @@ body {
     </div>
   </div>
 
-  <!-- ==================== LSAT STUDY TRACKER ==================== -->
-  <h2 class="section-header">LSAT Study Tracker</h2>
-  <p class="section-hint">Track your study sessions, practice scores, and weekly goals</p>
+  <!-- ==================== LSAT STUDY ==================== -->
+  <h2 class="section-header">LSAT Study</h2>
+  <p class="section-hint">Track your hours, scores, and to-do's across LSAT Demon and Blueprint</p>
 
-  <div class="metric-row">
-    <div class="metric">
-      <div class="metric-label">Total hours</div>
-      <div class="metric-value" id="total-hours">0</div>
+  <div class="program-grid">
+
+    <!-- ===== LSAT DEMON ===== -->
+    <div class="program-card">
+      <div class="program-header">
+        <div class="program-icon program-icon-demon">D</div>
+        <div>
+          <div class="program-name">LSAT Demon</div>
+          <div class="program-sub">Hour tracking</div>
+        </div>
+      </div>
+      <div class="program-body">
+        <div class="metric-row">
+          <div class="metric">
+            <div class="metric-label">Total hours</div>
+            <div class="metric-value" id="demon-total-hours">0</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">This week</div>
+            <div class="metric-value" id="demon-week-hours">0</div>
+            <div class="progress-bg">
+              <div class="progress-fill" id="demon-goal-bar" style="width:0%; background:#e87070;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size:13px; font-weight:500; color:#ffffffb0; margin-bottom:6px;">Log hours</div>
+        <div class="n-form">
+          <div class="n-field">
+            <label>Date</label>
+            <input type="date" id="demon-date" />
+          </div>
+          <div class="n-field" style="flex:0.6; min-width:70px;">
+            <label>Hours</label>
+            <input type="number" id="demon-hours" min="0.25" max="12" step="0.25" value="1" />
+          </div>
+          <div style="padding-top:18px;">
+            <button class="btn-new" onclick="addDemonSession()"><i class="ti ti-plus" aria-hidden="true" style="font-size:13px; vertical-align:-1px;"></i> Add</button>
+          </div>
+        </div>
+
+        <div class="study-log" id="demon-log" style="margin-top:8px;">
+          <div class="empty-state" style="padding:1rem;"><i class="ti ti-clock" aria-hidden="true"></i>No sessions yet</div>
+        </div>
+      </div>
     </div>
-    <div class="metric">
-      <div class="metric-label">Sessions this week</div>
-      <div class="metric-value" id="week-sessions">0</div>
-    </div>
-    <div class="metric">
-      <div class="metric-label">Best practice score</div>
-      <div class="metric-value" id="best-score">&mdash;</div>
-    </div>
-    <div class="metric">
-      <div class="metric-label">Weekly goal</div>
-      <div class="metric-value small" id="weekly-goal-display">0 / 10 hrs</div>
-      <div class="progress-bg">
-        <div class="progress-fill" id="goal-progress" style="width: 0%;"></div>
+
+    <!-- ===== BLUEPRINT ===== -->
+    <div class="program-card">
+      <div class="program-header">
+        <div class="program-icon program-icon-bp">B</div>
+        <div>
+          <div class="program-name">Blueprint</div>
+          <div class="program-sub">Scores, hours &amp; to-do's</div>
+        </div>
+      </div>
+      <div class="program-body">
+        <div class="metric-row">
+          <div class="metric">
+            <div class="metric-label">Best score</div>
+            <div class="metric-value" id="bp-best-score">&mdash;</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Total hours</div>
+            <div class="metric-value" id="bp-total-hours">0</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">This week</div>
+            <div class="metric-value" id="bp-week-hours">0</div>
+          </div>
+        </div>
+
+        <div style="font-size:13px; font-weight:500; color:#ffffffb0; margin-bottom:6px;">Log session</div>
+        <div class="n-form">
+          <div class="n-field">
+            <label>Date</label>
+            <input type="date" id="bp-date" />
+          </div>
+          <div class="n-field" style="flex:0.5; min-width:60px;">
+            <label>Hours</label>
+            <input type="number" id="bp-hours" min="0.25" max="12" step="0.25" value="1" />
+          </div>
+          <div class="n-field" style="flex:0.5; min-width:70px;">
+            <label>Score</label>
+            <input type="number" id="bp-score" min="120" max="180" placeholder="opt." />
+          </div>
+          <div style="padding-top:18px;">
+            <button class="btn-new" onclick="addBpSession()"><i class="ti ti-plus" aria-hidden="true" style="font-size:13px; vertical-align:-1px;"></i> Add</button>
+          </div>
+        </div>
+
+        <div class="study-log" id="bp-log" style="margin-top:8px;">
+          <div class="empty-state" style="padding:1rem;"><i class="ti ti-clipboard" aria-hidden="true"></i>No sessions yet</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Kanban-style study board -->
-  <div class="kanban">
-    <div class="kanban-col">
-      <div class="kanban-col-header">
-        <span class="status-dot status-todo"></span> To study <span class="count" id="k-todo-count">6</span>
-      </div>
-      <div id="k-todo">
-        <div class="kanban-item"><div class="kanban-item-title">Logical reasoning</div><div class="kanban-item-meta">Core skills</div></div>
-        <div class="kanban-item"><div class="kanban-item-title">Reading comprehension</div><div class="kanban-item-meta">Core skills</div></div>
-        <div class="kanban-item"><div class="kanban-item-title">Logic games</div><div class="kanban-item-meta">Core skills</div></div>
+  <!-- ===== BLUEPRINT TO-DO'S / CALENDAR ===== -->
+  <h2 class="section-header" style="margin-top:1.5rem;">Blueprint Calendar / To-do's</h2>
+  <p class="section-hint">Track your upcoming Blueprint assignments and deadlines</p>
+  <div class="n-card">
+    <div class="tab-bar">
+      <button class="tab active" onclick="switchBpTab(this,'list')">All to-do's</button>
+      <button class="tab" onclick="switchBpTab(this,'calendar')">Calendar</button>
+    </div>
+
+    <div id="bp-tab-list">
+      <div class="todo-list" id="bp-todos"></div>
+      <div class="todo-add">
+        <input type="text" id="bp-todo-text" placeholder="Add a to-do..." onkeydown="if(event.key==='Enter')addBpTodo()" />
+        <input type="date" id="bp-todo-due" style="max-width:140px;" />
+        <button class="btn-new" onclick="addBpTodo()"><i class="ti ti-plus" aria-hidden="true" style="font-size:13px; vertical-align:-1px;"></i></button>
       </div>
     </div>
-    <div class="kanban-col">
-      <div class="kanban-col-header">
-        <span class="status-dot status-progress"></span> In progress <span class="count" id="k-prog-count">0</span>
-      </div>
-      <div id="k-progress"></div>
-    </div>
-    <div class="kanban-col">
-      <div class="kanban-col-header">
-        <span class="status-dot status-done"></span> Mastered <span class="count" id="k-done-count">0</span>
-      </div>
-      <div id="k-done"></div>
+
+    <div id="bp-tab-calendar" class="hidden">
+      <div id="bp-cal-grid" style="font-size:13px;"></div>
     </div>
   </div>
 
-  <!-- Log a session -->
-  <div class="n-card" style="margin-top: 16px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-      <span style="font-size: 14px; font-weight: 500; color: #ffffffb0;">Log a study session</span>
-      <button class="btn-new" onclick="addSession()"><i class="ti ti-plus" aria-hidden="true" style="font-size:13px; vertical-align:-1px;"></i> New</button>
-    </div>
-    <div class="n-form">
-      <div class="n-field">
-        <label>Date</label>
-        <input type="date" id="lsat-date" />
-      </div>
-      <div class="n-field">
-        <label>Topic</label>
-        <select id="lsat-topic">
-          <option value="Logical reasoning">Logical reasoning</option>
-          <option value="Reading comprehension">Reading comprehension</option>
-          <option value="Logic games">Logic games</option>
-          <option value="Writing sample">Writing sample</option>
-          <option value="Practice test">Practice test</option>
-          <option value="Review">Review</option>
-        </select>
-      </div>
-      <div class="n-field" style="min-width: 70px; flex: 0.5;">
-        <label>Hours</label>
-        <input type="number" id="lsat-hours" min="0.25" max="12" step="0.25" value="1" />
-      </div>
-      <div class="n-field" style="min-width: 80px; flex: 0.5;">
-        <label>Score (optional)</label>
-        <input type="number" id="lsat-score" min="120" max="180" placeholder="120-180" />
-      </div>
-    </div>
-  </div>
-
-  <!-- Study log -->
-  <div class="n-card" style="margin-top: 8px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-      <span style="font-size: 14px; font-weight: 500; color: #ffffffb0;">Study log</span>
-      <span style="font-size: 12px; color: #ffffff38;" id="log-count">0 sessions</span>
-    </div>
-    <div class="study-log" id="lsat-log">
-      <div class="empty-state" id="log-empty">
-        <i class="ti ti-notebook" aria-hidden="true"></i>
-        No sessions logged yet
-      </div>
-    </div>
-  </div>
-
-  <!-- ==================== EMAILS - Two Column ==================== -->
+  <!-- ==================== EMAILS ==================== -->
   <div class="two-col">
     <div>
       <h2 class="section-header">Personal Email</h2>
@@ -512,116 +404,240 @@ body {
       </div>
     </div>
   </div>
-
 </div>
 
 <script>
-const STORAGE_KEY = 'lsat_sessions_v1';
+const DEMON_KEY = 'lsat_demon_v1';
+const BP_KEY = 'lsat_bp_v1';
+const BP_TODO_KEY = 'lsat_bp_todos_v1';
 
-// Dynamic greeting
 const now = new Date();
 const hour = now.getHours();
-const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-document.getElementById('greeting').textContent = greet + ', Alejandro';
+document.getElementById('greeting').textContent = (hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening') + ', Alejandro';
 document.getElementById('dateDisplay').textContent = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-document.getElementById('lsat-date').valueAsDate = now;
+const todayStr = now.toISOString().slice(0, 10);
+document.querySelectorAll('input[type="date"]').forEach(el => el.value = todayStr);
 
-// Calendar tabs
+// Utils
+function getStore(key) { try { return JSON.parse(localStorage.getItem(key)) || []; } catch { return []; } }
+function setStore(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+function weekBounds() {
+  const d = new Date(); const day = d.getDay();
+  const s = new Date(d); s.setDate(d.getDate() - day);
+  const e = new Date(s); e.setDate(s.getDate() + 6);
+  return [s.toISOString().slice(0,10), e.toISOString().slice(0,10)];
+}
+
+// ==================== CALENDAR TABS ====================
 window.switchCalTab = function(btn, tab) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('[id^="cal-"]').forEach(d => d.classList.add('hidden'));
+  document.querySelectorAll('.tab-bar')[0].querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
-  document.getElementById('cal-' + tab).classList.remove('hidden');
+  ['today','week','upcoming'].forEach(t => document.getElementById('cal-'+t).classList.toggle('hidden', t !== tab));
 };
 
-// LSAT Tracker
-function getSessions() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { return []; }
+// ==================== LSAT DEMON ====================
+function renderDemon() {
+  const sessions = getStore(DEMON_KEY);
+  const logEl = document.getElementById('demon-log');
+  const totalH = sessions.reduce((s, x) => s + x.hours, 0);
+  const [ws, we] = weekBounds();
+  const weekH = sessions.filter(x => x.date >= ws && x.date <= we).reduce((s, x) => s + x.hours, 0);
+
+  document.getElementById('demon-total-hours').textContent = Math.round(totalH * 10) / 10;
+  document.getElementById('demon-week-hours').textContent = Math.round(weekH * 10) / 10;
+  document.getElementById('demon-goal-bar').style.width = Math.min(100, Math.round(weekH / 10 * 100)) + '%';
+
+  if (!sessions.length) {
+    logEl.innerHTML = '<div class="empty-state" style="padding:1rem;"><i class="ti ti-clock" aria-hidden="true"></i>No sessions yet</div>';
+    return;
+  }
+  const sorted = [...sessions].sort((a, b) => b.date.localeCompare(a.date));
+  logEl.innerHTML = sorted.map((s, i) => `
+    <div class="study-log-row">
+      <span class="log-date">${s.date}</span>
+      <span class="n-tag n-tag-red">Demon</span>
+      <span style="flex:1;"></span>
+      <span class="log-hours">${s.hours}h</span>
+      <button class="delete-btn" onclick="delDemon(${i})"><i class="ti ti-x" aria-hidden="true"></i></button>
+    </div>
+  `).join('');
 }
-function saveSessions(s) { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
 
-function getTopicTag(topic) {
-  const map = {
-    'Logical reasoning': 'n-tag-blue',
-    'Reading comprehension': 'n-tag-purple',
-    'Logic games': 'n-tag-teal',
-    'Writing sample': 'n-tag-orange',
-    'Practice test': 'n-tag-red',
-    'Review': 'n-tag-green'
-  };
-  return map[topic] || 'n-tag-blue';
+window.addDemonSession = function() {
+  const date = document.getElementById('demon-date').value;
+  const hours = parseFloat(document.getElementById('demon-hours').value);
+  if (!date || !hours) return;
+  const s = getStore(DEMON_KEY);
+  s.push({ date, hours });
+  setStore(DEMON_KEY, s);
+  document.getElementById('demon-hours').value = '1';
+  renderDemon();
+};
+
+window.delDemon = function(si) {
+  const s = getStore(DEMON_KEY);
+  const sorted = [...s].sort((a, b) => b.date.localeCompare(a.date));
+  const del = sorted[si];
+  const ri = s.findIndex(x => x.date === del.date && x.hours === del.hours);
+  if (ri > -1) { s.splice(ri, 1); setStore(DEMON_KEY, s); renderDemon(); }
+};
+
+// ==================== BLUEPRINT ====================
+function renderBp() {
+  const sessions = getStore(BP_KEY);
+  const logEl = document.getElementById('bp-log');
+  const totalH = sessions.reduce((s, x) => s + x.hours, 0);
+  const [ws, we] = weekBounds();
+  const weekH = sessions.filter(x => x.date >= ws && x.date <= we).reduce((s, x) => s + x.hours, 0);
+  const scores = sessions.filter(x => x.score).map(x => x.score);
+
+  document.getElementById('bp-total-hours').textContent = Math.round(totalH * 10) / 10;
+  document.getElementById('bp-week-hours').textContent = Math.round(weekH * 10) / 10;
+  document.getElementById('bp-best-score').textContent = scores.length ? Math.max(...scores) : '—';
+
+  if (!sessions.length) {
+    logEl.innerHTML = '<div class="empty-state" style="padding:1rem;"><i class="ti ti-clipboard" aria-hidden="true"></i>No sessions yet</div>';
+    return;
+  }
+  const sorted = [...sessions].sort((a, b) => b.date.localeCompare(a.date));
+  logEl.innerHTML = sorted.map((s, i) => `
+    <div class="study-log-row">
+      <span class="log-date">${s.date}</span>
+      <span class="n-tag n-tag-blue">Blueprint</span>
+      <span style="flex:1;"></span>
+      <span class="log-hours">${s.hours}h</span>
+      ${s.score ? `<span class="log-score" style="color:${s.score >= 160 ? '#4dba87' : s.score >= 150 ? '#e8a44a' : '#ffffff5c'}">${s.score}</span>` : '<span class="log-score" style="color:#ffffff28;">&mdash;</span>'}
+      <button class="delete-btn" onclick="delBp(${i})"><i class="ti ti-x" aria-hidden="true"></i></button>
+    </div>
+  `).join('');
 }
 
-function getWeekBounds() {
-  const d = new Date(); const day = d.getDay();
-  const start = new Date(d); start.setDate(d.getDate() - day);
-  const end = new Date(start); end.setDate(start.getDate() + 6);
-  return [start.toISOString().slice(0, 10), end.toISOString().slice(0, 10)];
-}
+window.addBpSession = function() {
+  const date = document.getElementById('bp-date').value;
+  const hours = parseFloat(document.getElementById('bp-hours').value);
+  const score = document.getElementById('bp-score').value;
+  if (!date || !hours) return;
+  const s = getStore(BP_KEY);
+  s.push({ date, hours, score: score ? parseInt(score) : null });
+  setStore(BP_KEY, s);
+  document.getElementById('bp-hours').value = '1';
+  document.getElementById('bp-score').value = '';
+  renderBp();
+};
 
-function renderSessions() {
-  const sessions = getSessions();
-  const logEl = document.getElementById('lsat-log');
-  const countEl = document.getElementById('log-count');
+window.delBp = function(si) {
+  const s = getStore(BP_KEY);
+  const sorted = [...s].sort((a, b) => b.date.localeCompare(a.date));
+  const del = sorted[si];
+  const ri = s.findIndex(x => x.date === del.date && x.hours === del.hours && x.score === del.score);
+  if (ri > -1) { s.splice(ri, 1); setStore(BP_KEY, s); renderBp(); }
+};
 
-  if (sessions.length === 0) {
-    logEl.innerHTML = '<div class="empty-state"><i class="ti ti-notebook" aria-hidden="true"></i>No sessions logged yet</div>';
-    countEl.textContent = '0 sessions';
+// ==================== BLUEPRINT TO-DO'S ====================
+function renderBpTodos() {
+  const todos = getStore(BP_TODO_KEY);
+  const el = document.getElementById('bp-todos');
+  if (!todos.length) {
+    el.innerHTML = '<div class="empty-state" style="padding:1rem;"><i class="ti ti-checkbox" aria-hidden="true"></i>No to-do\'s yet</div>';
   } else {
-    const sorted = [...sessions].sort((a, b) => b.date.localeCompare(a.date));
-    logEl.innerHTML = sorted.map((s, i) => `
-      <div class="study-log-row">
-        <span class="log-date">${s.date}</span>
-        <span class="n-tag ${getTopicTag(s.topic)}">${s.topic}</span>
-        <span style="flex:1;"></span>
-        <span class="log-hours">${s.hours}h</span>
-        ${s.score ? `<span class="log-score" style="color:${s.score >= 160 ? '#4dba87' : s.score >= 150 ? '#e8a44a' : '#ffffff5c'}">${s.score}</span>` : '<span class="log-score" style="color:#ffffff28;">&mdash;</span>'}
-        <button class="delete-btn" onclick="deleteSession(${i})" title="Delete"><i class="ti ti-x" aria-hidden="true"></i></button>
+    const sorted = [...todos].sort((a, b) => {
+      if (a.done !== b.done) return a.done ? 1 : -1;
+      return (a.due || '9999').localeCompare(b.due || '9999');
+    });
+    el.innerHTML = sorted.map((t, i) => `
+      <div class="todo-item">
+        <button class="todo-check ${t.done ? 'checked' : ''}" onclick="toggleTodo(${i})">
+          ${t.done ? '<i class="ti ti-check" aria-hidden="true"></i>' : ''}
+        </button>
+        <span class="todo-text ${t.done ? 'checked' : ''}">${escHtml(t.text)}</span>
+        ${t.due ? `<span class="todo-due">${t.due}</span>` : ''}
+        <button class="delete-btn" onclick="delTodo(${i})"><i class="ti ti-x" aria-hidden="true"></i></button>
       </div>
     `).join('');
-    countEl.textContent = sessions.length + ' session' + (sessions.length !== 1 ? 's' : '');
   }
-
-  const totalHours = sessions.reduce((sum, s) => sum + parseFloat(s.hours), 0);
-  document.getElementById('total-hours').textContent = Math.round(totalHours * 10) / 10;
-
-  const [weekStart, weekEnd] = getWeekBounds();
-  const weekSessions = sessions.filter(s => s.date >= weekStart && s.date <= weekEnd);
-  const weekHours = weekSessions.reduce((sum, s) => sum + parseFloat(s.hours), 0);
-  document.getElementById('week-sessions').textContent = weekSessions.length;
-
-  const scores = sessions.filter(s => s.score).map(s => parseInt(s.score));
-  document.getElementById('best-score').textContent = scores.length > 0 ? Math.max(...scores) : '—';
-
-  const goalHours = 10;
-  const pct = Math.min(100, Math.round((weekHours / goalHours) * 100));
-  document.getElementById('weekly-goal-display').textContent = `${Math.round(weekHours * 10) / 10} / ${goalHours} hrs`;
-  document.getElementById('goal-progress').style.width = pct + '%';
+  renderBpCalendar();
 }
 
-window.addSession = function () {
-  const date = document.getElementById('lsat-date').value;
-  const topic = document.getElementById('lsat-topic').value;
-  const hours = document.getElementById('lsat-hours').value;
-  const score = document.getElementById('lsat-score').value;
-  if (!date || !hours) return;
-  const sessions = getSessions();
-  sessions.push({ date, topic, hours: parseFloat(hours), score: score ? parseInt(score) : null });
-  saveSessions(sessions);
-  renderSessions();
-  document.getElementById('lsat-score').value = '';
-  document.getElementById('lsat-hours').value = '1';
+function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+window.addBpTodo = function() {
+  const text = document.getElementById('bp-todo-text').value.trim();
+  if (!text) return;
+  const due = document.getElementById('bp-todo-due').value || null;
+  const todos = getStore(BP_TODO_KEY);
+  todos.push({ text, due, done: false });
+  setStore(BP_TODO_KEY, todos);
+  document.getElementById('bp-todo-text').value = '';
+  renderBpTodos();
 };
 
-window.deleteSession = function (sortedIndex) {
-  const sessions = getSessions();
-  const sorted = [...sessions].sort((a, b) => b.date.localeCompare(a.date));
-  const toDelete = sorted[sortedIndex];
-  const realIndex = sessions.findIndex(s => s.date === toDelete.date && s.topic === toDelete.topic && s.hours === toDelete.hours && s.score === toDelete.score);
-  if (realIndex > -1) { sessions.splice(realIndex, 1); saveSessions(sessions); renderSessions(); }
+window.toggleTodo = function(si) {
+  const todos = getStore(BP_TODO_KEY);
+  const sorted = [...todos].sort((a, b) => {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    return (a.due || '9999').localeCompare(b.due || '9999');
+  });
+  const target = sorted[si];
+  const ri = todos.findIndex(t => t.text === target.text && t.due === target.due);
+  if (ri > -1) { todos[ri].done = !todos[ri].done; setStore(BP_TODO_KEY, todos); renderBpTodos(); }
 };
 
-renderSessions();
+window.delTodo = function(si) {
+  const todos = getStore(BP_TODO_KEY);
+  const sorted = [...todos].sort((a, b) => {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    return (a.due || '9999').localeCompare(b.due || '9999');
+  });
+  const target = sorted[si];
+  const ri = todos.findIndex(t => t.text === target.text && t.due === target.due);
+  if (ri > -1) { todos.splice(ri, 1); setStore(BP_TODO_KEY, todos); renderBpTodos(); }
+};
+
+// Blueprint calendar view
+function renderBpCalendar() {
+  const todos = getStore(BP_TODO_KEY);
+  const grid = document.getElementById('bp-cal-grid');
+  const d = new Date();
+  const year = d.getFullYear(); const month = d.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const monthName = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+  const todoDates = {};
+  todos.forEach(t => { if (t.due) { todoDates[t.due] = todoDates[t.due] || []; todoDates[t.due].push(t); } });
+
+  let html = `<div style="text-align:center; font-weight:600; color:#ffffffb0; margin-bottom:12px;">${monthName}</div>`;
+  html += '<div style="display:grid; grid-template-columns:repeat(7,1fr); gap:2px; text-align:center;">';
+  ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(day => {
+    html += `<div style="font-size:11px; color:#ffffff38; padding:4px 0;">${day}</div>`;
+  });
+  for (let i = 0; i < firstDay; i++) html += '<div></div>';
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const isToday = dateStr === todayStr;
+    const hasTodo = todoDates[dateStr];
+    const bg = isToday ? '#2e6fdb' : hasTodo ? '#ffffff14' : 'transparent';
+    const border = hasTodo && !isToday ? '1px solid #6eb0f740' : 'none';
+    html += `<div style="padding:6px 2px; border-radius:4px; background:${bg}; border:${border}; position:relative; color:${isToday ? '#fff' : '#ffffffa0'};">
+      ${day}
+      ${hasTodo ? '<div style="width:4px;height:4px;border-radius:50%;background:#6eb0f7;margin:2px auto 0;"></div>' : ''}
+    </div>`;
+  }
+  html += '</div>';
+  grid.innerHTML = html;
+}
+
+window.switchBpTab = function(btn, tab) {
+  btn.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('bp-tab-list').classList.toggle('hidden', tab !== 'list');
+  document.getElementById('bp-tab-calendar').classList.toggle('hidden', tab !== 'calendar');
+};
+
+// Init
+renderDemon();
+renderBp();
+renderBpTodos();
 </script>
 </body>
 </html>
