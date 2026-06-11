@@ -356,6 +356,19 @@ body {
     </div>
   </div>
 
+  <!-- ===== SCORE PROGRESS CHART ===== -->
+  <h2 class="section-header" style="margin-top:1.5rem;">Score progress</h2>
+  <p class="section-hint">Your Blueprint practice test scores over time</p>
+  <div class="n-card" id="score-chart-card">
+    <div style="position:relative; width:100%; height:240px;">
+      <canvas id="scoreChart" role="img" aria-label="Line chart of LSAT practice scores over time">Practice score history</canvas>
+    </div>
+    <div id="score-chart-empty" class="empty-state" style="display:none;">
+      <i class="ti ti-chart-line" aria-hidden="true"></i>
+      Log Blueprint sessions with scores to see your progress chart
+    </div>
+  </div>
+
   <!-- ===== BLUEPRINT CALENDAR ===== -->
   <h2 class="section-header" style="margin-top:1.5rem;">Blueprint Calendar</h2>
   <p class="section-hint">Your Blueprint study schedule — live from your iCal feed</p>
@@ -416,6 +429,7 @@ body {
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
 const DEMON_KEY = 'lsat_demon_v1';
 const BP_KEY = 'lsat_bp_v1';
@@ -532,7 +546,7 @@ window.addBpSession = function() {
   setStore(BP_KEY, s);
   document.getElementById('bp-hours').value = '1';
   document.getElementById('bp-score').value = '';
-  renderBp();
+  renderBp(); renderScoreChart();
 };
 
 window.delBp = function(si) {
@@ -542,6 +556,87 @@ window.delBp = function(si) {
   const ri = s.findIndex(x => x.date === del.date && x.hours === del.hours && x.score === del.score);
   if (ri > -1) { s.splice(ri, 1); setStore(BP_KEY, s); renderBp(); }
 };
+
+// ==================== SCORE PROGRESS CHART ====================
+let scoreChartInstance = null;
+function renderScoreChart() {
+  const sessions = getStore(BP_KEY).filter(x => x.score).sort((a, b) => a.date.localeCompare(b.date));
+  const canvas = document.getElementById('scoreChart');
+  const emptyEl = document.getElementById('score-chart-empty');
+
+  if (!sessions.length) {
+    canvas.style.display = 'none';
+    emptyEl.style.display = '';
+    if (scoreChartInstance) { scoreChartInstance.destroy(); scoreChartInstance = null; }
+    return;
+  }
+  canvas.style.display = '';
+  emptyEl.style.display = 'none';
+
+  const labels = sessions.map(s => {
+    const d = new Date(s.date + 'T12:00:00');
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  });
+  const scores = sessions.map(s => s.score);
+  const minScore = Math.max(120, Math.min(...scores) - 5);
+  const maxScore = Math.min(180, Math.max(...scores) + 5);
+
+  if (scoreChartInstance) scoreChartInstance.destroy();
+
+  const isDark = true;
+  scoreChartInstance = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Practice score',
+        data: scores,
+        borderColor: '#6eb0f7',
+        backgroundColor: 'rgba(110, 176, 247, 0.1)',
+        fill: true,
+        tension: 0.3,
+        pointBackgroundColor: scores.map(s => s >= 160 ? '#4dba87' : s >= 150 ? '#e8a44a' : '#e87070'),
+        pointBorderColor: scores.map(s => s >= 160 ? '#4dba87' : s >= 150 ? '#e8a44a' : '#e87070'),
+        pointRadius: 5,
+        pointHoverRadius: 7,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#2d2d2d',
+          titleColor: '#ffffffc0',
+          bodyColor: '#ffffffe6',
+          borderColor: '#ffffff20',
+          borderWidth: 1,
+          callbacks: {
+            label: function(ctx) { return 'Score: ' + ctx.parsed.y; }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#ffffff48', font: { size: 11 } },
+          grid: { color: '#ffffff0a' }
+        },
+        y: {
+          min: minScore,
+          max: maxScore,
+          ticks: {
+            color: '#ffffff48',
+            font: { size: 11 },
+            stepSize: 5,
+            callback: function(v) { return v; }
+          },
+          grid: { color: '#ffffff0a' }
+        }
+      }
+    }
+  });
+}
 
 // ==================== BLUEPRINT CALENDAR (iCal) ====================
 const BP_ICAL_URL = 'https://api-composite-lsat.blueprintprep.com/cal/fd9ae28f-35a7-4246-90e4-c446f03cecab?k=RevKCD8UMrqHPLdNghgjrT6usbEgpICgXZp55YEW3OM%3D';
@@ -743,6 +838,7 @@ function loadBpCalendar() {
 // Init
 renderDemon();
 renderBp();
+renderScoreChart();
 loadBpCalendar();
 </script>
 </body>
