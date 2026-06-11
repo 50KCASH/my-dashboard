@@ -235,35 +235,6 @@ body {
     <div id="main-cal-grid"></div>
   </div>
 
-  <!-- ==================== GOOGLE CALENDAR ==================== -->
-  <h2 class="section-header" style="margin-top:1.5rem;">Google Calendar</h2>
-  <p class="section-hint">Your upcoming events and schedule</p>
-  <div class="n-card">
-    <div class="tab-bar">
-      <button class="tab active" onclick="switchCalTab(this, 'today')">Today</button>
-      <button class="tab" onclick="switchCalTab(this, 'week')">This week</button>
-      <button class="tab" onclick="switchCalTab(this, 'upcoming')">Upcoming</button>
-    </div>
-    <div id="cal-today">
-      <div class="empty-state">
-        <i class="ti ti-calendar-off" aria-hidden="true"></i>
-        No events today
-      </div>
-    </div>
-    <div id="cal-week" class="hidden">
-      <div class="empty-state">
-        <i class="ti ti-calendar-off" aria-hidden="true"></i>
-        No events this week
-      </div>
-    </div>
-    <div id="cal-upcoming" class="hidden">
-      <div class="empty-state">
-        <i class="ti ti-calendar-off" aria-hidden="true"></i>
-        No upcoming events
-      </div>
-    </div>
-  </div>
-
   <!-- ==================== LSAT STUDY ==================== -->
   <h2 class="section-header">LSAT Study</h2>
   <p class="section-hint">Track your hours, scores, and to-do's across LSAT Demon and Blueprint</p>
@@ -412,33 +383,6 @@ body {
     </div>
   </div>
 
-  <!-- ==================== EMAILS ==================== -->
-  <div class="two-col">
-    <div>
-      <h2 class="section-header">Personal Email</h2>
-      <p class="section-hint">anemer04@outlook.com</p>
-      <div class="n-card">
-        <div class="empty-state">
-          <i class="ti ti-mail" aria-hidden="true"></i>
-          Connect your Outlook account to see emails here
-          <br>
-          <button class="connect-btn"><i class="ti ti-brand-windows" aria-hidden="true" style="font-size:16px;"></i> Connect Outlook</button>
-        </div>
-      </div>
-    </div>
-    <div>
-      <h2 class="section-header">School Email</h2>
-      <p class="section-hint">Outlook</p>
-      <div class="n-card">
-        <div class="empty-state">
-          <i class="ti ti-school" aria-hidden="true"></i>
-          Connect your school account to see emails here
-          <br>
-          <button class="connect-btn"><i class="ti ti-brand-windows" aria-hidden="true" style="font-size:16px;"></i> Connect school Outlook</button>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -463,13 +407,6 @@ function weekBounds() {
   const e = new Date(s); e.setDate(s.getDate() + 6);
   return [s.toISOString().slice(0,10), e.toISOString().slice(0,10)];
 }
-
-// ==================== CALENDAR TABS ====================
-window.switchCalTab = function(btn, tab) {
-  document.querySelectorAll('.tab-bar')[0].querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  ['today','week','upcoming'].forEach(t => document.getElementById('cal-'+t).classList.toggle('hidden', t !== tab));
-};
 
 // ==================== MONTHLY CALENDAR ====================
 let mainCalMonth = now.getMonth();
