@@ -223,8 +223,20 @@ body {
   <h1 class="page-title" id="greeting">Alejandro's Dashboard</h1>
   <p class="page-subtitle" id="dateDisplay"></p>
 
+  <!-- ==================== MONTHLY CALENDAR ==================== -->
+  <h2 class="section-header">Calendar</h2>
+  <p class="section-hint" id="main-cal-subtitle">June 2026</p>
+  <div class="n-card">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+      <button class="btn-sm-outline" onclick="mainCalNav(-1)"><i class="ti ti-chevron-left" aria-hidden="true" style="font-size:14px;"></i></button>
+      <span id="main-cal-month" style="font-size:15px; font-weight:600; color:#ffffffb0;"></span>
+      <button class="btn-sm-outline" onclick="mainCalNav(1)"><i class="ti ti-chevron-right" aria-hidden="true" style="font-size:14px;"></i></button>
+    </div>
+    <div id="main-cal-grid"></div>
+  </div>
+
   <!-- ==================== GOOGLE CALENDAR ==================== -->
-  <h2 class="section-header">Google Calendar</h2>
+  <h2 class="section-header" style="margin-top:1.5rem;">Google Calendar</h2>
   <p class="section-hint">Your upcoming events and schedule</p>
   <div class="n-card">
     <div class="tab-bar">
@@ -458,6 +470,45 @@ window.switchCalTab = function(btn, tab) {
   btn.classList.add('active');
   ['today','week','upcoming'].forEach(t => document.getElementById('cal-'+t).classList.toggle('hidden', t !== tab));
 };
+
+// ==================== MONTHLY CALENDAR ====================
+let mainCalMonth = now.getMonth();
+let mainCalYear = now.getFullYear();
+
+function renderMainCal() {
+  const grid = document.getElementById('main-cal-grid');
+  const firstDay = new Date(mainCalYear, mainCalMonth, 1).getDay();
+  const daysInMonth = new Date(mainCalYear, mainCalMonth + 1, 0).getDate();
+  const monthLabel = new Date(mainCalYear, mainCalMonth).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  document.getElementById('main-cal-month').textContent = monthLabel;
+  document.getElementById('main-cal-subtitle').textContent = monthLabel;
+
+  let html = '<div style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px; text-align:center;">';
+  ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(day => {
+    html += '<div style="font-size:12px; color:#ffffff38; padding:6px 0; font-weight:500;">' + day + '</div>';
+  });
+  for (let i = 0; i < firstDay; i++) html += '<div></div>';
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = mainCalYear + '-' + String(mainCalMonth+1).padStart(2,'0') + '-' + String(day).padStart(2,'0');
+    const isToday = dateStr === todayStr;
+    const dayOfWeek = new Date(mainCalYear, mainCalMonth, day).getDay();
+    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+    html += '<div style="padding:8px 4px; border-radius:6px;' +
+      (isToday ? ' background:#2e6fdb; color:#fff; font-weight:600;' : isWeekend ? ' color:#ffffff40;' : ' color:#ffffffa0;') +
+      ' font-size:14px; cursor:default;">' + day + '</div>';
+  }
+  html += '</div>';
+  grid.innerHTML = html;
+}
+
+window.mainCalNav = function(dir) {
+  mainCalMonth += dir;
+  if (mainCalMonth > 11) { mainCalMonth = 0; mainCalYear++; }
+  if (mainCalMonth < 0) { mainCalMonth = 11; mainCalYear--; }
+  renderMainCal();
+};
+
+renderMainCal();
 
 // ==================== LSAT DEMON ====================
 function renderDemon() {
