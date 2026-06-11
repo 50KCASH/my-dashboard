@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alejandro's Dashboard</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  :root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f5f5f3;
+    --bg-tertiary: #eeecea;
+    --text-primary: #1a1a1a;
+    --text-secondary: #6b6b6b;
+    --text-tertiary: #9b9b9b;
+    --border-light: rgba(0,0,0,0.1);
+    --border-med: rgba(0,0,0,0.15);
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --blue: #378ADD;
+    --blue-dark: #185FA5;
+    --green: #1D9E75;
+    --amber: #BA7517;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-primary: #1e1e1e;
+      --bg-secondary: #2a2a2a;
+      --bg-tertiary: #333333;
+      --text-primary: #e8e8e8;
+      --text-secondary: #a0a0a0;
+      --text-tertiary: #707070;
+      --border-light: rgba(255,255,255,0.08);
+      --border-med: rgba(255,255,255,0.15);
+    }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: var(--bg-tertiary); color: var(--text-primary); line-height: 1.5; }
+  .container { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem; }
+  .dash-section { margin-bottom: 2rem; }
+  .dash-section-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 16px; font-weight: 500; }
+  .dash-section-header i { font-size: 20px; color: var(--text-secondary); }
+  .card { background: var(--bg-primary); border: 0.5px solid var(--border-light); border-radius: var(--radius-lg); padding: 1rem 1.25rem; }
+  .card + .card { margin-top: 8px; }
+  .metric-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 12px; }
+  .metric { background: var(--bg-secondary); border-radius: var(--radius-md); padding: 0.75rem 1rem; }
+  .metric-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
+  .metric-value { font-size: 22px; font-weight: 500; }
+  .metric-value.small { font-size: 16px; }
+  .empty-state { text-align: center; padding: 2rem 1rem; color: var(--text-secondary); font-size: 14px; }
+  .empty-state i { font-size: 32px; display: block; margin-bottom: 8px; color: var(--text-tertiary); }
+  .tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: var(--radius-md); margin-right: 4px; }
+  .tag-logic { background: #E6F1FB; color: #0C447C; }
+  .tag-reading { background: #EEEDFE; color: #3C3489; }
+  .tag-games { background: #E1F5EE; color: #085041; }
+  .tag-writing { background: #FAEEDA; color: #633806; }
+  @media (prefers-color-scheme: dark) {
+    .tag-logic { background: #0C447C; color: #B5D4F4; }
+    .tag-reading { background: #3C3489; color: #CECBF6; }
+    .tag-games { background: #085041; color: #9FE1CB; }
+    .tag-writing { background: #633806; color: #FAC775; }
+  }
+  .lsat-form { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; align-items: flex-end; }
+  .lsat-form label { font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 4px; }
+  .lsat-form input, .lsat-form select {
+    width: 100%; padding: 6px 10px; border: 0.5px solid var(--border-med); border-radius: var(--radius-md);
+    background: var(--bg-primary); color: var(--text-primary); font-size: 14px; font-family: var(--font);
+  }
+  .lsat-form input:focus, .lsat-form select:focus { outline: 2px solid var(--blue); border-color: transparent; }
+  .lsat-field { flex: 1; min-width: 100px; }
+  .lsat-log { max-height: 250px; overflow-y: auto; }
+  .lsat-log-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 0.5px solid var(--border-light); font-size: 13px; }
+  .lsat-log-row:last-child { border-bottom: none; }
+  .lsat-log-date { color: var(--text-secondary); min-width: 75px; }
+  .lsat-log-topic { flex: 1; }
+  .lsat-log-hours { color: var(--text-secondary); min-width: 50px; text-align: right; }
+  .lsat-log-score { font-weight: 500; min-width: 40px; text-align: right; }
+  .btn-sm { font-size: 13px; padding: 6px 14px; cursor: pointer; border-radius: var(--radius-md); }
+  .btn-primary { background: var(--blue); color: #fff; border: none; }
+  .btn-primary:hover { background: var(--blue-dark); }
+  .progress-bar-bg { height: 6px; background: var(--bg-secondary); border-radius: 3px; overflow: hidden; margin-top: 6px; }
+  .progress-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
+  .connect-btn {
+    display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: var(--radius-md);
+    border: 0.5px solid var(--border-med); background: var(--bg-primary); color: var(--text-primary);
+    font-size: 14px; cursor: pointer; font-weight: 500; margin: 0 auto;
+  }
+  .connect-btn:hover { background: var(--bg-secondary); }
+  .connect-btn i { font-size: 18px; }
+  .greeting { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
+  .date-display { font-size: 14px; color: var(--text-secondary); margin-bottom: 1.5rem; }
+  .tab-bar { display: flex; gap: 0; border-bottom: 0.5px solid var(--border-light); margin-bottom: 12px; }
+  .tab {
+    padding: 8px 16px; font-size: 13px; color: var(--text-secondary); cursor: pointer;
+    border: none; border-bottom: 2px solid transparent; background: none; font-family: var(--font);
+  }
+  .tab.active { color: var(--text-primary); border-bottom-color: var(--blue); font-weight: 500; }
+  .tab:hover:not(.active) { color: var(--text-primary); }
+  .hidden { display: none; }
+  .delete-btn { background: none; border: none; color: var(--text-tertiary); cursor: pointer; font-size: 14px; padding: 2px; }
+  .delete-btn:hover { color: #E24B4A; }
+  .event-row { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 0.5px solid var(--border-light); }
+  .event-row:last-child { border-bottom: none; }
+  .event-time { font-size: 12px; color: var(--text-secondary); min-width: 70px; padding-top: 2px; }
+  .event-title { font-size: 14px; font-weight: 500; }
+  .event-detail { font-size: 12px; color: var(--text-secondary); }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="greeting" id="greeting">Good morning, Alejandro</div>
+  <div class="date-display" id="dateDisplay"></div>
+
+  <!-- Google Calendar -->
+  <div class="dash-section">
+    <div class="dash-section-header">
+      <i class="ti ti-calendar" aria-hidden="true"></i> Google Calendar
+    </div>
+    <div class="card">
+      <div class="tab-bar">
+        <button class="tab active" onclick="switchCalTab(this, 'today')">Today</button>
+        <button class="tab" onclick="switchCalTab(this, 'week')">This week</button>
+        <button class="tab" onclick="switchCalTab(this, 'upcoming')">Upcoming</button>
+      </div>
+      <div id="cal-today">
+        <div class="empty-state">
+          <i class="ti ti-calendar-off" aria-hidden="true"></i>
+          No events today
+        </div>
+      </div>
+      <div id="cal-week" class="hidden">
+        <div class="empty-state">
+          <i class="ti ti-calendar-off" aria-hidden="true"></i>
+          No events this week
+        </div>
+      </div>
+      <div id="cal-upcoming" class="hidden">
+        <div class="empty-state">
+          <i class="ti ti-calendar-off" aria-hidden="true"></i>
+          No upcoming events
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LSAT Study Tracker -->
+  <div class="dash-section">
+    <div class="dash-section-header">
+      <i class="ti ti-book" aria-hidden="true"></i> LSAT study tracker
+    </div>
+    <div class="metric-row" id="lsat-metrics">
+      <div class="metric">
+        <div class="metric-label">Total hours</div>
+        <div class="metric-value" id="total-hours">0</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Sessions this week</div>
+        <div class="metric-value" id="week-sessions">0</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Best practice score</div>
+        <div class="metric-value" id="best-score">—</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Weekly goal</div>
+        <div class="metric-value small" id="weekly-goal-display">0 / 10 hrs</div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="goal-progress" style="width: 0%; background: #1D9E75;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size: 14px; font-weight: 500; margin-bottom: 10px;">Log a study session</div>
+      <div class="lsat-form">
+        <div class="lsat-field">
+          <label>Date</label>
+          <input type="date" id="lsat-date" />
+        </div>
+        <div class="lsat-field">
+          <label>Topic</label>
+          <select id="lsat-topic">
+            <option value="Logical reasoning">Logical reasoning</option>
+            <option value="Reading comprehension">Reading comprehension</option>
+            <option value="Logic games">Logic games</option>
+            <option value="Writing sample">Writing sample</option>
+            <option value="Practice test">Practice test</option>
+            <option value="Review">Review</option>
+          </select>
+        </div>
+        <div class="lsat-field" style="min-width: 70px; flex: 0.5;">
+          <label>Hours</label>
+          <input type="number" id="lsat-hours" min="0.25" max="12" step="0.25" value="1" />
+        </div>
+        <div class="lsat-field" style="min-width: 70px; flex: 0.5;">
+          <label>Score (optional)</label>
+          <input type="number" id="lsat-score" min="120" max="180" placeholder="120-180" />
+        </div>
+        <div style="padding-top: 18px;">
+          <button class="btn-sm btn-primary" onclick="addSession()">
+            <i class="ti ti-plus" aria-hidden="true" style="font-size:14px; vertical-align:-1px;"></i> Add
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top: 8px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span style="font-size: 14px; font-weight: 500;">Study log</span>
+        <span style="font-size: 12px; color: var(--text-tertiary);" id="log-count">0 sessions</span>
+      </div>
+      <div class="lsat-log" id="lsat-log">
+        <div class="empty-state" id="log-empty">
+          <i class="ti ti-notebook" aria-hidden="true"></i>
+          No sessions logged yet — start studying!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Personal Email -->
+  <div class="dash-section">
+    <div class="dash-section-header">
+      <i class="ti ti-mail" aria-hidden="true"></i> Personal email
+      <span style="font-size: 12px; color: var(--text-tertiary); font-weight: 400; margin-left: auto;">anemer04@outlook.com</span>
+    </div>
+    <div class="card">
+      <div class="empty-state">
+        <i class="ti ti-mail-cog" aria-hidden="true"></i>
+        Connect your Outlook account to see emails here
+      </div>
+    </div>
+  </div>
+
+  <!-- School Email -->
+  <div class="dash-section">
+    <div class="dash-section-header">
+      <i class="ti ti-school" aria-hidden="true"></i> School email
+      <span style="font-size: 12px; color: var(--text-tertiary); font-weight: 400; margin-left: auto;">Outlook</span>
+    </div>
+    <div class="card">
+      <div class="empty-state">
+        <i class="ti ti-mail-cog" aria-hidden="true"></i>
+        Connect your school Outlook account to see emails here
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'lsat_sessions_v1';
+
+// Greeting
+const now = new Date();
+const hour = now.getHours();
+const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+document.getElementById('greeting').textContent = greet + ', Alejandro';
+document.getElementById('dateDisplay').textContent = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+document.getElementById('lsat-date').valueAsDate = now;
+
+// Calendar tabs
+window.switchCalTab = function(btn, tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('[id^="cal-"]').forEach(d => d.classList.add('hidden'));
+  btn.classList.add('active');
+  document.getElementById('cal-' + tab).classList.remove('hidden');
+};
+
+// LSAT
+function getSessions() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { return []; }
+}
+function saveSessions(s) { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
+
+function getTopicTag(topic) {
+  const map = { 'Logical reasoning': 'tag-logic', 'Reading comprehension': 'tag-reading', 'Logic games': 'tag-games', 'Writing sample': 'tag-writing', 'Practice test': 'tag-logic', 'Review': 'tag-reading' };
+  return map[topic] || 'tag-logic';
+}
+
+function getWeekBounds() {
+  const d = new Date(); const day = d.getDay();
+  const start = new Date(d); start.setDate(d.getDate() - day);
+  const end = new Date(start); end.setDate(start.getDate() + 6);
+  return [start.toISOString().slice(0,10), end.toISOString().slice(0,10)];
+}
+
+function renderSessions() {
+  const sessions = getSessions();
+  const logEl = document.getElementById('lsat-log');
+  const countEl = document.getElementById('log-count');
+
+  if (sessions.length === 0) {
+    logEl.innerHTML = '<div class="empty-state"><i class="ti ti-notebook" aria-hidden="true"></i>No sessions logged yet — start studying!</div>';
+    countEl.textContent = '0 sessions';
+  } else {
+    const sorted = [...sessions].sort((a, b) => b.date.localeCompare(a.date));
+    logEl.innerHTML = sorted.map((s, i) => `
+      <div class="lsat-log-row">
+        <span class="lsat-log-date">${s.date}</span>
+        <span class="tag ${getTopicTag(s.topic)}">${s.topic}</span>
+        <span class="lsat-log-hours">${s.hours}h</span>
+        ${s.score ? `<span class="lsat-log-score" style="color: ${s.score >= 160 ? '#1D9E75' : s.score >= 150 ? '#BA7517' : 'var(--text-secondary)'};">${s.score}</span>` : '<span class="lsat-log-score" style="color:var(--text-tertiary);">—</span>'}
+        <button class="delete-btn" onclick="deleteSession(${i})" title="Delete"><i class="ti ti-x" aria-hidden="true"></i></button>
+      </div>
+    `).join('');
+    countEl.textContent = sessions.length + ' session' + (sessions.length !== 1 ? 's' : '');
+  }
+
+  const totalHours = sessions.reduce((sum, s) => sum + parseFloat(s.hours), 0);
+  document.getElementById('total-hours').textContent = Math.round(totalHours * 10) / 10;
+
+  const [weekStart, weekEnd] = getWeekBounds();
+  const weekSessions = sessions.filter(s => s.date >= weekStart && s.date <= weekEnd);
+  const weekHours = weekSessions.reduce((sum, s) => sum + parseFloat(s.hours), 0);
+  document.getElementById('week-sessions').textContent = weekSessions.length;
+
+  const scores = sessions.filter(s => s.score).map(s => parseInt(s.score));
+  document.getElementById('best-score').textContent = scores.length > 0 ? Math.max(...scores) : '—';
+
+  const goalHours = 10;
+  const pct = Math.min(100, Math.round((weekHours / goalHours) * 100));
+  document.getElementById('weekly-goal-display').textContent = `${Math.round(weekHours * 10) / 10} / ${goalHours} hrs`;
+  document.getElementById('goal-progress').style.width = pct + '%';
+}
+
+window.addSession = function() {
+  const date = document.getElementById('lsat-date').value;
+  const topic = document.getElementById('lsat-topic').value;
+  const hours = document.getElementById('lsat-hours').value;
+  const score = document.getElementById('lsat-score').value;
+  if (!date || !hours) return;
+  const sessions = getSessions();
+  sessions.push({ date, topic, hours: parseFloat(hours), score: score ? parseInt(score) : null });
+  saveSessions(sessions);
+  renderSessions();
+  document.getElementById('lsat-score').value = '';
+  document.getElementById('lsat-hours').value = '1';
+};
+
+window.deleteSession = function(sortedIndex) {
+  const sessions = getSessions();
+  const sorted = [...sessions].sort((a, b) => b.date.localeCompare(a.date));
+  const toDelete = sorted[sortedIndex];
+  const realIndex = sessions.findIndex(s => s.date === toDelete.date && s.topic === toDelete.topic && s.hours === toDelete.hours && s.score === toDelete.score);
+  if (realIndex > -1) { sessions.splice(realIndex, 1); saveSessions(sessions); renderSessions(); }
+};
+
+renderSessions();
+</script>
+</body>
+</html>
