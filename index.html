@@ -5,257 +5,545 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Alejandro's Dashboard</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg-primary: #ffffff;
-    --bg-secondary: #f5f5f3;
-    --bg-tertiary: #eeecea;
-    --text-primary: #1a1a1a;
-    --text-secondary: #6b6b6b;
-    --text-tertiary: #9b9b9b;
-    --border-light: rgba(0,0,0,0.1);
-    --border-med: rgba(0,0,0,0.15);
-    --radius-md: 8px;
-    --radius-lg: 12px;
-    --blue: #378ADD;
-    --blue-dark: #185FA5;
-    --green: #1D9E75;
-    --amber: #BA7517;
-    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg-primary: #1e1e1e;
-      --bg-secondary: #2a2a2a;
-      --bg-tertiary: #333333;
-      --text-primary: #e8e8e8;
-      --text-secondary: #a0a0a0;
-      --text-tertiary: #707070;
-      --border-light: rgba(255,255,255,0.08);
-      --border-med: rgba(255,255,255,0.15);
-    }
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: var(--font); background: var(--bg-tertiary); color: var(--text-primary); line-height: 1.5; }
-  .container { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem; }
-  .dash-section { margin-bottom: 2rem; }
-  .dash-section-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 16px; font-weight: 500; }
-  .dash-section-header i { font-size: 20px; color: var(--text-secondary); }
-  .card { background: var(--bg-primary); border: 0.5px solid var(--border-light); border-radius: var(--radius-lg); padding: 1rem 1.25rem; }
-  .card + .card { margin-top: 8px; }
-  .metric-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 12px; }
-  .metric { background: var(--bg-secondary); border-radius: var(--radius-md); padding: 0.75rem 1rem; }
-  .metric-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
-  .metric-value { font-size: 22px; font-weight: 500; }
-  .metric-value.small { font-size: 16px; }
-  .empty-state { text-align: center; padding: 2rem 1rem; color: var(--text-secondary); font-size: 14px; }
-  .empty-state i { font-size: 32px; display: block; margin-bottom: 8px; color: var(--text-tertiary); }
-  .tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: var(--radius-md); margin-right: 4px; }
-  .tag-logic { background: #E6F1FB; color: #0C447C; }
-  .tag-reading { background: #EEEDFE; color: #3C3489; }
-  .tag-games { background: #E1F5EE; color: #085041; }
-  .tag-writing { background: #FAEEDA; color: #633806; }
-  @media (prefers-color-scheme: dark) {
-    .tag-logic { background: #0C447C; color: #B5D4F4; }
-    .tag-reading { background: #3C3489; color: #CECBF6; }
-    .tag-games { background: #085041; color: #9FE1CB; }
-    .tag-writing { background: #633806; color: #FAC775; }
-  }
-  .lsat-form { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; align-items: flex-end; }
-  .lsat-form label { font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 4px; }
-  .lsat-form input, .lsat-form select {
-    width: 100%; padding: 6px 10px; border: 0.5px solid var(--border-med); border-radius: var(--radius-md);
-    background: var(--bg-primary); color: var(--text-primary); font-size: 14px; font-family: var(--font);
-  }
-  .lsat-form input:focus, .lsat-form select:focus { outline: 2px solid var(--blue); border-color: transparent; }
-  .lsat-field { flex: 1; min-width: 100px; }
-  .lsat-log { max-height: 250px; overflow-y: auto; }
-  .lsat-log-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 0.5px solid var(--border-light); font-size: 13px; }
-  .lsat-log-row:last-child { border-bottom: none; }
-  .lsat-log-date { color: var(--text-secondary); min-width: 75px; }
-  .lsat-log-topic { flex: 1; }
-  .lsat-log-hours { color: var(--text-secondary); min-width: 50px; text-align: right; }
-  .lsat-log-score { font-weight: 500; min-width: 40px; text-align: right; }
-  .btn-sm { font-size: 13px; padding: 6px 14px; cursor: pointer; border-radius: var(--radius-md); }
-  .btn-primary { background: var(--blue); color: #fff; border: none; }
-  .btn-primary:hover { background: var(--blue-dark); }
-  .progress-bar-bg { height: 6px; background: var(--bg-secondary); border-radius: 3px; overflow: hidden; margin-top: 6px; }
-  .progress-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
-  .connect-btn {
-    display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: var(--radius-md);
-    border: 0.5px solid var(--border-med); background: var(--bg-primary); color: var(--text-primary);
-    font-size: 14px; cursor: pointer; font-weight: 500; margin: 0 auto;
-  }
-  .connect-btn:hover { background: var(--bg-secondary); }
-  .connect-btn i { font-size: 18px; }
-  .greeting { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
-  .date-display { font-size: 14px; color: var(--text-secondary); margin-bottom: 1.5rem; }
-  .tab-bar { display: flex; gap: 0; border-bottom: 0.5px solid var(--border-light); margin-bottom: 12px; }
-  .tab {
-    padding: 8px 16px; font-size: 13px; color: var(--text-secondary); cursor: pointer;
-    border: none; border-bottom: 2px solid transparent; background: none; font-family: var(--font);
-  }
-  .tab.active { color: var(--text-primary); border-bottom-color: var(--blue); font-weight: 500; }
-  .tab:hover:not(.active) { color: var(--text-primary); }
-  .hidden { display: none; }
-  .delete-btn { background: none; border: none; color: var(--text-tertiary); cursor: pointer; font-size: 14px; padding: 2px; }
-  .delete-btn:hover { color: #E24B4A; }
-  .event-row { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 0.5px solid var(--border-light); }
-  .event-row:last-child { border-bottom: none; }
-  .event-time { font-size: 12px; color: var(--text-secondary); min-width: 70px; padding-top: 2px; }
-  .event-title { font-size: 14px; font-weight: 500; }
-  .event-detail { font-size: 12px; color: var(--text-secondary); }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #191919;
+  color: #ffffffcf;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* Cover banner */
+.cover {
+  width: 100%;
+  height: 220px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 30%, #0f3460 60%, #1a1a2e 100%);
+  background-size: cover;
+  position: relative;
+  overflow: hidden;
+}
+.cover::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(transparent, #191919);
+}
+
+/* Page icon */
+.page-icon {
+  width: 72px;
+  height: 72px;
+  font-size: 48px;
+  margin-top: -40px;
+  position: relative;
+  z-index: 2;
+  line-height: 72px;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 96px 3rem;
+}
+
+/* Title */
+.page-title {
+  font-size: 40px;
+  font-weight: 700;
+  color: #ffffffe6;
+  margin: 8px 0 4px;
+  letter-spacing: -0.5px;
+}
+.page-subtitle {
+  font-size: 14px;
+  color: #ffffff5c;
+  margin-bottom: 2rem;
+}
+
+/* Section headers - Notion style */
+.section-header {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffffe6;
+  margin: 2.5rem 0 4px;
+}
+.section-hint {
+  font-size: 13px;
+  color: #ffffff48;
+  margin-bottom: 12px;
+}
+
+/* Notion-style dark cards */
+.n-card {
+  background: #ffffff08;
+  border: 1px solid #ffffff0f;
+  border-radius: 4px;
+  padding: 14px 16px;
+  transition: background 0.15s;
+}
+.n-card:hover {
+  background: #ffffff12;
+}
+
+/* Gallery cards (like the Courses section) */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  margin-bottom: 8px;
+}
+.gallery-card {
+  background: #ffffff08;
+  border: 1px solid #ffffff0f;
+  border-radius: 4px;
+  overflow: hidden;
+  transition: background 0.15s;
+  cursor: default;
+}
+.gallery-card:hover { background: #ffffff12; }
+.gallery-cover {
+  height: 120px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+.gallery-body { padding: 12px 14px; }
+.gallery-title { font-size: 14px; font-weight: 600; color: #ffffffe6; margin-bottom: 4px; }
+.gallery-sub { font-size: 12px; color: #ffffff5c; }
+
+/* Kanban board (like the To-do's section) */
+.kanban {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 8px;
+}
+.kanban-col {
+  min-height: 100px;
+}
+.kanban-col-header {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 0;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.kanban-col-header .count {
+  font-size: 12px;
+  color: #ffffff48;
+  font-weight: 400;
+}
+.kanban-item {
+  background: #ffffff08;
+  border: 1px solid #ffffff0f;
+  border-radius: 4px;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  transition: background 0.15s;
+}
+.kanban-item:hover { background: #ffffff14; }
+.kanban-item-title { font-weight: 500; color: #ffffffe6; margin-bottom: 2px; }
+.kanban-item-meta { font-size: 11px; color: #ffffff48; }
+
+/* Tags - Notion colored */
+.n-tag {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-weight: 500;
+  margin-right: 4px;
+}
+.n-tag-blue { background: #2e4a6e; color: #6eb0f7; }
+.n-tag-green { background: #28443b; color: #4dba87; }
+.n-tag-orange { background: #5c3b1e; color: #e8a44a; }
+.n-tag-purple { background: #3d2e5c; color: #b08ee6; }
+.n-tag-red { background: #5c2828; color: #e87070; }
+.n-tag-teal { background: #1e4a4a; color: #4dc9c9; }
+.n-tag-pink { background: #4a2040; color: #d976b0; }
+.n-tag-yellow { background: #4a4020; color: #d9c76b; }
+.n-tag-gray { background: #3a3a3a; color: #9a9a9a; }
+
+/* Status dots */
+.status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+.status-todo { background: #ffffff30; }
+.status-progress { background: #2e9b6e; }
+.status-done { background: #6eb0f7; }
+
+/* Metric cards */
+.metric-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin: 12px 0;
+}
+.metric {
+  background: #ffffff08;
+  border: 1px solid #ffffff0f;
+  border-radius: 4px;
+  padding: 14px 16px;
+}
+.metric-label { font-size: 12px; color: #ffffff48; margin-bottom: 4px; }
+.metric-value { font-size: 24px; font-weight: 600; color: #ffffffe6; }
+.metric-value.small { font-size: 16px; }
+
+/* Progress bar */
+.progress-bg { height: 4px; background: #ffffff14; border-radius: 2px; overflow: hidden; margin-top: 8px; }
+.progress-fill { height: 100%; border-radius: 2px; background: #2e9b6e; transition: width 0.3s; }
+
+/* Tabs */
+.tab-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid #ffffff14;
+  margin-bottom: 14px;
+}
+.tab {
+  padding: 6px 14px;
+  font-size: 13px;
+  color: #ffffff5c;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.15s;
+}
+.tab.active { color: #ffffffe6; border-bottom-color: #ffffffe6; font-weight: 500; }
+.tab:hover:not(.active) { color: #ffffff9c; }
+
+/* Form inputs */
+.n-form { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; margin: 12px 0; }
+.n-form label { font-size: 12px; color: #ffffff48; display: block; margin-bottom: 4px; }
+.n-form input, .n-form select {
+  width: 100%;
+  padding: 6px 10px;
+  background: #ffffff0a;
+  border: 1px solid #ffffff14;
+  border-radius: 4px;
+  color: #ffffffe6;
+  font-size: 14px;
+  font-family: inherit;
+}
+.n-form input:focus, .n-form select:focus {
+  outline: none;
+  border-color: #4d9be6;
+  box-shadow: 0 0 0 1px #4d9be640;
+}
+.n-form select option { background: #2d2d2d; color: #ffffffe6; }
+.n-field { flex: 1; min-width: 100px; }
+
+/* Buttons */
+.btn-new {
+  background: #2e6fdb;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+}
+.btn-new:hover { background: #2558b0; }
+
+/* Study log */
+.study-log { max-height: 280px; overflow-y: auto; }
+.study-log-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid #ffffff0a;
+  font-size: 13px;
+}
+.study-log-row:last-child { border-bottom: none; }
+.log-date { color: #ffffff48; min-width: 80px; font-size: 12px; }
+.log-hours { color: #ffffff5c; min-width: 45px; text-align: right; font-size: 12px; }
+.log-score { font-weight: 600; min-width: 40px; text-align: right; font-size: 13px; }
+.delete-btn {
+  background: none;
+  border: none;
+  color: #ffffff20;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 2px;
+  transition: color 0.15s;
+}
+.delete-btn:hover { color: #e87070; }
+
+/* Two-column layout */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  margin-top: 2.5rem;
+}
+.two-col .section-header { margin-top: 0; }
+
+/* Empty states */
+.empty-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #ffffff38;
+  font-size: 13px;
+}
+.empty-state i { font-size: 28px; display: block; margin-bottom: 6px; color: #ffffff20; }
+
+/* Connect button */
+.connect-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: 1px solid #ffffff1a;
+  background: #ffffff08;
+  color: #ffffff9c;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  margin-top: 10px;
+  transition: all 0.15s;
+}
+.connect-btn:hover { background: #ffffff14; color: #ffffffe6; }
+
+/* Calendar event rows */
+.event-row { display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid #ffffff0a; }
+.event-row:last-child { border-bottom: none; }
+.event-time { font-size: 12px; color: #ffffff48; min-width: 65px; padding-top: 1px; }
+.event-title { font-size: 14px; font-weight: 500; color: #ffffffe6; }
+
+/* Notion divider */
+.n-divider { border: none; border-top: 1px solid #ffffff14; margin: 2rem 0; }
+
+.hidden { display: none; }
+
+/* List items for bottom sections */
+.list-group-title { font-size: 13px; font-weight: 600; color: #ffffff9c; margin: 16px 0 6px; }
+.list-group-title:first-child { margin-top: 8px; }
+.list-item { font-size: 14px; color: #ffffff7a; padding: 4px 0; display: flex; align-items: center; gap: 6px; }
+.list-item i { font-size: 16px; }
+.schedule-time { font-size: 13px; font-weight: 600; color: #ffffff9c; margin-top: 14px; margin-bottom: 4px; }
+.schedule-time:first-child { margin-top: 8px; }
+.schedule-item { font-size: 14px; color: #ffffff7a; padding: 2px 0; display: flex; align-items: center; gap: 6px; }
+
+@media (max-width: 768px) {
+  .container { padding: 0 24px 3rem; }
+  .kanban { grid-template-columns: 1fr; }
+  .two-col { grid-template-columns: 1fr; gap: 0; }
+  .gallery-grid { grid-template-columns: 1fr; }
+  .page-title { font-size: 30px; }
+  .cover { height: 160px; }
+}
 </style>
 </head>
 <body>
+
+<!-- Cover Banner -->
+<div class="cover" id="cover"></div>
+
 <div class="container">
-  <div class="greeting" id="greeting">Good morning, Alejandro</div>
-  <div class="date-display" id="dateDisplay"></div>
+  <!-- Page Icon + Title -->
+  <div class="page-icon">&#x1F4DA;</div>
+  <h1 class="page-title" id="greeting">Alejandro's Dashboard</h1>
+  <p class="page-subtitle" id="dateDisplay"></p>
 
-  <!-- Google Calendar -->
-  <div class="dash-section">
-    <div class="dash-section-header">
-      <i class="ti ti-calendar" aria-hidden="true"></i> Google Calendar
+  <!-- ==================== GOOGLE CALENDAR ==================== -->
+  <h2 class="section-header">Google Calendar</h2>
+  <p class="section-hint">Your upcoming events and schedule</p>
+  <div class="n-card">
+    <div class="tab-bar">
+      <button class="tab active" onclick="switchCalTab(this, 'today')">Today</button>
+      <button class="tab" onclick="switchCalTab(this, 'week')">This week</button>
+      <button class="tab" onclick="switchCalTab(this, 'upcoming')">Upcoming</button>
     </div>
-    <div class="card">
-      <div class="tab-bar">
-        <button class="tab active" onclick="switchCalTab(this, 'today')">Today</button>
-        <button class="tab" onclick="switchCalTab(this, 'week')">This week</button>
-        <button class="tab" onclick="switchCalTab(this, 'upcoming')">Upcoming</button>
-      </div>
-      <div id="cal-today">
-        <div class="empty-state">
-          <i class="ti ti-calendar-off" aria-hidden="true"></i>
-          No events today
-        </div>
-      </div>
-      <div id="cal-week" class="hidden">
-        <div class="empty-state">
-          <i class="ti ti-calendar-off" aria-hidden="true"></i>
-          No events this week
-        </div>
-      </div>
-      <div id="cal-upcoming" class="hidden">
-        <div class="empty-state">
-          <i class="ti ti-calendar-off" aria-hidden="true"></i>
-          No upcoming events
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- LSAT Study Tracker -->
-  <div class="dash-section">
-    <div class="dash-section-header">
-      <i class="ti ti-book" aria-hidden="true"></i> LSAT study tracker
-    </div>
-    <div class="metric-row" id="lsat-metrics">
-      <div class="metric">
-        <div class="metric-label">Total hours</div>
-        <div class="metric-value" id="total-hours">0</div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">Sessions this week</div>
-        <div class="metric-value" id="week-sessions">0</div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">Best practice score</div>
-        <div class="metric-value" id="best-score">—</div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">Weekly goal</div>
-        <div class="metric-value small" id="weekly-goal-display">0 / 10 hrs</div>
-        <div class="progress-bar-bg">
-          <div class="progress-bar-fill" id="goal-progress" style="width: 0%; background: #1D9E75;"></div>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <div style="font-size: 14px; font-weight: 500; margin-bottom: 10px;">Log a study session</div>
-      <div class="lsat-form">
-        <div class="lsat-field">
-          <label>Date</label>
-          <input type="date" id="lsat-date" />
-        </div>
-        <div class="lsat-field">
-          <label>Topic</label>
-          <select id="lsat-topic">
-            <option value="Logical reasoning">Logical reasoning</option>
-            <option value="Reading comprehension">Reading comprehension</option>
-            <option value="Logic games">Logic games</option>
-            <option value="Writing sample">Writing sample</option>
-            <option value="Practice test">Practice test</option>
-            <option value="Review">Review</option>
-          </select>
-        </div>
-        <div class="lsat-field" style="min-width: 70px; flex: 0.5;">
-          <label>Hours</label>
-          <input type="number" id="lsat-hours" min="0.25" max="12" step="0.25" value="1" />
-        </div>
-        <div class="lsat-field" style="min-width: 70px; flex: 0.5;">
-          <label>Score (optional)</label>
-          <input type="number" id="lsat-score" min="120" max="180" placeholder="120-180" />
-        </div>
-        <div style="padding-top: 18px;">
-          <button class="btn-sm btn-primary" onclick="addSession()">
-            <i class="ti ti-plus" aria-hidden="true" style="font-size:14px; vertical-align:-1px;"></i> Add
-          </button>
-        </div>
-      </div>
-    </div>
-    <div class="card" style="margin-top: 8px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-        <span style="font-size: 14px; font-weight: 500;">Study log</span>
-        <span style="font-size: 12px; color: var(--text-tertiary);" id="log-count">0 sessions</span>
-      </div>
-      <div class="lsat-log" id="lsat-log">
-        <div class="empty-state" id="log-empty">
-          <i class="ti ti-notebook" aria-hidden="true"></i>
-          No sessions logged yet — start studying!
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Personal Email -->
-  <div class="dash-section">
-    <div class="dash-section-header">
-      <i class="ti ti-mail" aria-hidden="true"></i> Personal email
-      <span style="font-size: 12px; color: var(--text-tertiary); font-weight: 400; margin-left: auto;">anemer04@outlook.com</span>
-    </div>
-    <div class="card">
+    <div id="cal-today">
       <div class="empty-state">
-        <i class="ti ti-mail-cog" aria-hidden="true"></i>
-        Connect your Outlook account to see emails here
+        <i class="ti ti-calendar-off" aria-hidden="true"></i>
+        No events today
+      </div>
+    </div>
+    <div id="cal-week" class="hidden">
+      <div class="empty-state">
+        <i class="ti ti-calendar-off" aria-hidden="true"></i>
+        No events this week
+      </div>
+    </div>
+    <div id="cal-upcoming" class="hidden">
+      <div class="empty-state">
+        <i class="ti ti-calendar-off" aria-hidden="true"></i>
+        No upcoming events
       </div>
     </div>
   </div>
 
-  <!-- School Email -->
-  <div class="dash-section">
-    <div class="dash-section-header">
-      <i class="ti ti-school" aria-hidden="true"></i> School email
-      <span style="font-size: 12px; color: var(--text-tertiary); font-weight: 400; margin-left: auto;">Outlook</span>
+  <!-- ==================== LSAT STUDY TRACKER ==================== -->
+  <h2 class="section-header">LSAT Study Tracker</h2>
+  <p class="section-hint">Track your study sessions, practice scores, and weekly goals</p>
+
+  <div class="metric-row">
+    <div class="metric">
+      <div class="metric-label">Total hours</div>
+      <div class="metric-value" id="total-hours">0</div>
     </div>
-    <div class="card">
-      <div class="empty-state">
-        <i class="ti ti-mail-cog" aria-hidden="true"></i>
-        Connect your school Outlook account to see emails here
+    <div class="metric">
+      <div class="metric-label">Sessions this week</div>
+      <div class="metric-value" id="week-sessions">0</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Best practice score</div>
+      <div class="metric-value" id="best-score">&mdash;</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Weekly goal</div>
+      <div class="metric-value small" id="weekly-goal-display">0 / 10 hrs</div>
+      <div class="progress-bg">
+        <div class="progress-fill" id="goal-progress" style="width: 0%;"></div>
       </div>
     </div>
   </div>
+
+  <!-- Kanban-style study board -->
+  <div class="kanban">
+    <div class="kanban-col">
+      <div class="kanban-col-header">
+        <span class="status-dot status-todo"></span> To study <span class="count" id="k-todo-count">6</span>
+      </div>
+      <div id="k-todo">
+        <div class="kanban-item"><div class="kanban-item-title">Logical reasoning</div><div class="kanban-item-meta">Core skills</div></div>
+        <div class="kanban-item"><div class="kanban-item-title">Reading comprehension</div><div class="kanban-item-meta">Core skills</div></div>
+        <div class="kanban-item"><div class="kanban-item-title">Logic games</div><div class="kanban-item-meta">Core skills</div></div>
+      </div>
+    </div>
+    <div class="kanban-col">
+      <div class="kanban-col-header">
+        <span class="status-dot status-progress"></span> In progress <span class="count" id="k-prog-count">0</span>
+      </div>
+      <div id="k-progress"></div>
+    </div>
+    <div class="kanban-col">
+      <div class="kanban-col-header">
+        <span class="status-dot status-done"></span> Mastered <span class="count" id="k-done-count">0</span>
+      </div>
+      <div id="k-done"></div>
+    </div>
+  </div>
+
+  <!-- Log a session -->
+  <div class="n-card" style="margin-top: 16px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+      <span style="font-size: 14px; font-weight: 500; color: #ffffffb0;">Log a study session</span>
+      <button class="btn-new" onclick="addSession()"><i class="ti ti-plus" aria-hidden="true" style="font-size:13px; vertical-align:-1px;"></i> New</button>
+    </div>
+    <div class="n-form">
+      <div class="n-field">
+        <label>Date</label>
+        <input type="date" id="lsat-date" />
+      </div>
+      <div class="n-field">
+        <label>Topic</label>
+        <select id="lsat-topic">
+          <option value="Logical reasoning">Logical reasoning</option>
+          <option value="Reading comprehension">Reading comprehension</option>
+          <option value="Logic games">Logic games</option>
+          <option value="Writing sample">Writing sample</option>
+          <option value="Practice test">Practice test</option>
+          <option value="Review">Review</option>
+        </select>
+      </div>
+      <div class="n-field" style="min-width: 70px; flex: 0.5;">
+        <label>Hours</label>
+        <input type="number" id="lsat-hours" min="0.25" max="12" step="0.25" value="1" />
+      </div>
+      <div class="n-field" style="min-width: 80px; flex: 0.5;">
+        <label>Score (optional)</label>
+        <input type="number" id="lsat-score" min="120" max="180" placeholder="120-180" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Study log -->
+  <div class="n-card" style="margin-top: 8px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+      <span style="font-size: 14px; font-weight: 500; color: #ffffffb0;">Study log</span>
+      <span style="font-size: 12px; color: #ffffff38;" id="log-count">0 sessions</span>
+    </div>
+    <div class="study-log" id="lsat-log">
+      <div class="empty-state" id="log-empty">
+        <i class="ti ti-notebook" aria-hidden="true"></i>
+        No sessions logged yet
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== EMAILS - Two Column ==================== -->
+  <div class="two-col">
+    <div>
+      <h2 class="section-header">Personal Email</h2>
+      <p class="section-hint">anemer04@outlook.com</p>
+      <div class="n-card">
+        <div class="empty-state">
+          <i class="ti ti-mail" aria-hidden="true"></i>
+          Connect your Outlook account to see emails here
+          <br>
+          <button class="connect-btn"><i class="ti ti-brand-windows" aria-hidden="true" style="font-size:16px;"></i> Connect Outlook</button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h2 class="section-header">School Email</h2>
+      <p class="section-hint">Outlook</p>
+      <div class="n-card">
+        <div class="empty-state">
+          <i class="ti ti-school" aria-hidden="true"></i>
+          Connect your school account to see emails here
+          <br>
+          <button class="connect-btn"><i class="ti ti-brand-windows" aria-hidden="true" style="font-size:16px;"></i> Connect school Outlook</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
 const STORAGE_KEY = 'lsat_sessions_v1';
 
-// Greeting
+// Dynamic greeting
 const now = new Date();
 const hour = now.getHours();
 const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
 document.getElementById('greeting').textContent = greet + ', Alejandro';
 document.getElementById('dateDisplay').textContent = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 document.getElementById('lsat-date').valueAsDate = now;
+
+// Cover image - dark desk aesthetic
+const canvas = document.createElement('canvas');
+canvas.width = 1400; canvas.height = 440;
+const ctx = canvas.getContext('2d');
+const grd = ctx.createLinearGradient(0, 0, 1400, 440);
+grd.addColorStop(0, '#0d1117');
+grd.addColorStop(0.3, '#161b22');
+grd.addColorStop(0.5, '#1a2332');
+grd.addColorStop(0.7, '#0f1923');
+grd.addColorStop(1, '#0d1117');
+ctx.fillStyle = grd;
+ctx.fillRect(0, 0, 1400, 440);
+for (let i = 0; i < 60; i++) {
+  ctx.fillStyle = `rgba(${100 + Math.floor(i*2.5)}, ${120 + Math.floor(i*2)}, ${160 + Math.floor(i*1.5)}, ${0.03 + (i%5)*0.008})`;
+  ctx.fillRect(Math.floor(i * 23.3), Math.floor((i * 7) % 440), Math.floor(200 + (i%4)*80), Math.floor(2 + (i%3)));
+}
+document.getElementById('cover').style.backgroundImage = `url(${canvas.toDataURL()})`;
 
 // Calendar tabs
 window.switchCalTab = function(btn, tab) {
@@ -265,22 +553,29 @@ window.switchCalTab = function(btn, tab) {
   document.getElementById('cal-' + tab).classList.remove('hidden');
 };
 
-// LSAT
+// LSAT Tracker
 function getSessions() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { return []; }
 }
 function saveSessions(s) { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
 
 function getTopicTag(topic) {
-  const map = { 'Logical reasoning': 'tag-logic', 'Reading comprehension': 'tag-reading', 'Logic games': 'tag-games', 'Writing sample': 'tag-writing', 'Practice test': 'tag-logic', 'Review': 'tag-reading' };
-  return map[topic] || 'tag-logic';
+  const map = {
+    'Logical reasoning': 'n-tag-blue',
+    'Reading comprehension': 'n-tag-purple',
+    'Logic games': 'n-tag-teal',
+    'Writing sample': 'n-tag-orange',
+    'Practice test': 'n-tag-red',
+    'Review': 'n-tag-green'
+  };
+  return map[topic] || 'n-tag-blue';
 }
 
 function getWeekBounds() {
   const d = new Date(); const day = d.getDay();
   const start = new Date(d); start.setDate(d.getDate() - day);
   const end = new Date(start); end.setDate(start.getDate() + 6);
-  return [start.toISOString().slice(0,10), end.toISOString().slice(0,10)];
+  return [start.toISOString().slice(0, 10), end.toISOString().slice(0, 10)];
 }
 
 function renderSessions() {
@@ -289,16 +584,17 @@ function renderSessions() {
   const countEl = document.getElementById('log-count');
 
   if (sessions.length === 0) {
-    logEl.innerHTML = '<div class="empty-state"><i class="ti ti-notebook" aria-hidden="true"></i>No sessions logged yet — start studying!</div>';
+    logEl.innerHTML = '<div class="empty-state"><i class="ti ti-notebook" aria-hidden="true"></i>No sessions logged yet</div>';
     countEl.textContent = '0 sessions';
   } else {
     const sorted = [...sessions].sort((a, b) => b.date.localeCompare(a.date));
     logEl.innerHTML = sorted.map((s, i) => `
-      <div class="lsat-log-row">
-        <span class="lsat-log-date">${s.date}</span>
-        <span class="tag ${getTopicTag(s.topic)}">${s.topic}</span>
-        <span class="lsat-log-hours">${s.hours}h</span>
-        ${s.score ? `<span class="lsat-log-score" style="color: ${s.score >= 160 ? '#1D9E75' : s.score >= 150 ? '#BA7517' : 'var(--text-secondary)'};">${s.score}</span>` : '<span class="lsat-log-score" style="color:var(--text-tertiary);">—</span>'}
+      <div class="study-log-row">
+        <span class="log-date">${s.date}</span>
+        <span class="n-tag ${getTopicTag(s.topic)}">${s.topic}</span>
+        <span style="flex:1;"></span>
+        <span class="log-hours">${s.hours}h</span>
+        ${s.score ? `<span class="log-score" style="color:${s.score >= 160 ? '#4dba87' : s.score >= 150 ? '#e8a44a' : '#ffffff5c'}">${s.score}</span>` : '<span class="log-score" style="color:#ffffff28;">&mdash;</span>'}
         <button class="delete-btn" onclick="deleteSession(${i})" title="Delete"><i class="ti ti-x" aria-hidden="true"></i></button>
       </div>
     `).join('');
@@ -322,7 +618,7 @@ function renderSessions() {
   document.getElementById('goal-progress').style.width = pct + '%';
 }
 
-window.addSession = function() {
+window.addSession = function () {
   const date = document.getElementById('lsat-date').value;
   const topic = document.getElementById('lsat-topic').value;
   const hours = document.getElementById('lsat-hours').value;
@@ -336,7 +632,7 @@ window.addSession = function() {
   document.getElementById('lsat-hours').value = '1';
 };
 
-window.deleteSession = function(sortedIndex) {
+window.deleteSession = function (sortedIndex) {
   const sessions = getSessions();
   const sorted = [...sessions].sort((a, b) => b.date.localeCompare(a.date));
   const toDelete = sorted[sortedIndex];
